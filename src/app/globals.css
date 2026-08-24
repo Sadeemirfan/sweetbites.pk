@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+/*
+  Raw design tokens - PLAN.md §2.3. These are the canonical CSS custom
+  properties; never hardcode a hex value anywhere else in the codebase.
+  They are aliased into Tailwind's theme below so utilities like
+  `bg-rosewood` / `text-ghee` work, while staying reactive if a token
+  is ever swapped at runtime (e.g. a themed section).
+*/
+:root {
+  --rosewood: #9a7170; /* brand colour, sampled from the logo */
+  --rosewood-d: #6e4b4a; /* darker rosewood for text on cream */
+  --cocoa-900: #241a1b; /* dark sections - warm near-black, never pure black */
+  --cocoa-800: #33262a; /* raised surface on dark */
+  --blush: #f6d3ce; /* light pink - Hero only, owner's pick over cocoa/rosewood/terracotta */
+  --cream-50: #faf5ee; /* page background */
+  --cream-100: #f3eadf; /* alternate light section */
+  --cream-200: #e6d8c8; /* borders, dividers */
+  --ghee: #c08a3e; /* gold - prices and primary CTAs ONLY */
+  --pista: #7e9a78; /* secondary accent - sparing */
+  --ink: #2a2022; /* body text on cream */
+  --whatsapp: #25d366; /* WhatsApp buttons only, never decoration */
+
+  /*
+    Admin-only status hues (§12). The public palette has no way to tell
+    seven order statuses apart, and a kanban that reads at a glance needs
+    that - so these are muted, low-chroma tints chosen to sit on cream
+    without competing with --ghee or --rosewood. They never appear on the
+    public site.
+  */
+  --status-pending: #a8894f;
+  --status-confirmed: #7a6ea8;
+  --status-baking: #c07a3e;
+  --status-ready: #5f8a6b;
+  --status-delivery: #4f7d9a;
+  --status-completed: #6b7a63;
+  --status-cancelled: #9a5f5f;
+  --danger: #9a4b4b;
+}
+
+@theme inline {
+  --color-rosewood: var(--rosewood);
+  --color-rosewood-d: var(--rosewood-d);
+  --color-cocoa-900: var(--cocoa-900);
+  --color-cocoa-800: var(--cocoa-800);
+  --color-blush: var(--blush);
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-ghee: var(--ghee);
+  --color-pista: var(--pista);
+  --color-ink: var(--ink);
+  --color-whatsapp: var(--whatsapp);
+
+  --color-status-pending: var(--status-pending);
+  --color-status-confirmed: var(--status-confirmed);
+  --color-status-baking: var(--status-baking);
+  --color-status-ready: var(--status-ready);
+  --color-status-delivery: var(--status-delivery);
+  --color-status-completed: var(--status-completed);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-danger: var(--danger);
+
+  /*
+    shadcn/ui semantic tokens - ADMIN ONLY (§3: "shadcn/ui - admin only,
+    public site stays custom").
+
+    These are aliases onto the brand palette above, not new colours, so
+    the dashboard inherits the same cream/ink/rosewood system while the
+    shadcn components keep working unmodified. Primary is --rosewood
+    rather than --ghee: §2.3 reserves gold for prices, and in an admin
+    full of buttons that discipline would be gone by the second screen.
+  */
+  --color-background: var(--cream-50);
+  --color-foreground: var(--ink);
+  --color-card: #fff;
+  --color-card-foreground: var(--ink);
+  --color-popover: #fff;
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--rosewood);
+  --color-primary-foreground: var(--cream-50);
+  --color-secondary: var(--cream-100);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--cream-100);
+  --color-muted-foreground: color-mix(in oklab, var(--ink) 58%, transparent);
+  --color-accent: var(--cream-100);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--cream-50);
+  --color-border: var(--cream-200);
+  --color-input: var(--cream-200);
+  --color-ring: var(--ghee);
+
+  /* next/font injects --font-fraunces / --font-instrument-sans on <html> */
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-body: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  /* Type scale - §2.4, rem, fluid via clamp() */
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-xs--line-height: 1.5;
+  --text-sm: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);
+  --text-sm--line-height: 1.5;
+  --text-base: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --text-base--line-height: 1.6;
+  --text-lg: clamp(1.25rem, 1.19rem + 0.3vw, 1.375rem);
+  --text-lg--line-height: 1.5;
+  --text-xl: clamp(1.75rem, 1.6rem + 0.75vw, 2.125rem);
+  --text-xl--line-height: 1.25;
+  --text-2xl: clamp(2.5rem, 2.2rem + 1.5vw, 3.25rem);
+  --text-2xl--line-height: 1.15;
+  --text-3xl: clamp(3.5rem, 3rem + 2.5vw, 4.5rem);
+  --text-3xl--line-height: 1.1;
+  --text-4xl: clamp(4.5rem, 3.8rem + 3.5vw, 6rem);
+  --text-4xl--line-height: 1.05;
+
+  /* Base spacing unit - every padding, margin, and gap utility is a multiple of this */
+  --spacing: 0.25rem;
+
+  /* Radii - 4-8px, no pill buttons */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows - cards on cream vs. cards on dark */
+  --shadow-cream: 0 1px 2px rgba(42, 32, 34, 0.04), 0 8px 24px -8px rgba(42, 32, 34, 0.12);
+  --shadow-dark: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background: var(--cream-50);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
+
+/* Fraunces carries SOFT/WONK; headings want the soft, slightly odd cut
+   the logo echoes, not the default upright one. */
+h1,
+h2,
+h3 {
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+  letter-spacing: -0.01em;
+}
+
+/* Visible --ghee focus ring on everything interactive. */
+:focus-visible {
+  outline: 2px solid var(--ghee);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/*
+  Static form of the cream ↔ dark "clip-path wipe" (§14). The angled
+  edge is the shape GSAP ScrollTrigger animates on scroll in Phase 7 -   rendering it statically now keeps the section rhythm intact without
+  pulling in an animation library. The wedge reveals whatever is behind
+  the section, so a wiped dark section must sit against --cream-50
+  (the body background), never --cream-100.
+*/
+:root {
+  --wipe-h: clamp(1.25rem, 3.5vw, 3rem);
+}
+
+.wipe-t {
+  clip-path: polygon(0 var(--wipe-h), 100% 0, 100% 100%, 0 100%);
+}
+
+.wipe-b {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--wipe-h)), 0 100%);
+}
+
+.wipe-tb {
+  clip-path: polygon(
+    0 var(--wipe-h),
+    100% 0,
+    100% calc(100% - var(--wipe-h)),
+    0 100%
+  );
+}
+
+/*
+  Print - the kitchen baking sheet (§12) and the order slip. Phones are
+  awkward in a kitchen, so the printed sheet is a primary deliverable,
+  not an afterthought: A4, large type, ink-free background, and no
+  screen chrome.
+*/
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12pt;
+  }
+
+  .no-print,
+  nav,
+  header button,
+  aside {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    border-color: #000 !important;
+  }
+
+  /* Never split a cake's instructions across two pages. */
+  .print-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-slot {
+    break-before: auto;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

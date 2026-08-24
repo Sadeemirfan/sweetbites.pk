@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sweetbites",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-21",
+  // Required — without it process.env comes back empty on Workers.
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+  // NOTE: once ISR/on-demand revalidation is used (not yet — no page
+  // fetches data at this phase), add an R2 bucket bound as
+  // NEXT_INC_CACHE_R2_BUCKET. The binding name is hardcoded by
+  // @opennextjs/cloudflare; renaming it breaks the cache silently.
+}
