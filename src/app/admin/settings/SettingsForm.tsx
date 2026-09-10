@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { saveSetting } from "@/app/admin/actions";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 import { cn } from "@/lib/utils/cn";
 
 const field =
@@ -28,6 +29,9 @@ export function SettingsForm({ settings }: { settings: Record<string, unknown> }
   const [pending, startTransition] = useTransition();
 
   const [headline, setHeadline] = useState(asString(settings.headline_text));
+  const [menuImage, setMenuImage] = useState<string | null>(
+    typeof settings.menu_image_url === "string" ? settings.menu_image_url : null
+  );
   const [whatsapp, setWhatsapp] = useState(asString(settings.whatsapp_number));
   const [lateFee, setLateFee] = useState(String(settings.late_night_fee ?? 0));
 
@@ -74,6 +78,19 @@ export function SettingsForm({ settings }: { settings: Record<string, unknown> }
         onSave={() => save("headline_text", headline, "Headline saved")}
       >
         <input value={headline} onChange={(e) => setHeadline(e.target.value)} className={field} />
+      </Block>
+
+      <Block
+        title="Menu"
+        hint="Photo of your price list - shown on the public /menu page. Upload a new one whenever prices change."
+        onSave={() => save("menu_image_url", menuImage, "Menu image saved")}
+      >
+        <ImageUploader
+          bucket="categories"
+          value={menuImage}
+          onChange={setMenuImage}
+          label="Menu photo"
+        />
       </Block>
 
       <Block

@@ -23,15 +23,15 @@ const instrumentSans = Instrument_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Homemade Cakes in Arifwala | Sweet Bites",
+    default: "Sweet Bites - Homemade Cakes in Arifwala, Lahore & Pattoki",
     // §15 pattern: "Custom Birthday Cakes in Arifwala | Sweet Bites"
     template: "%s",
   },
   description:
-    "Homemade, made-to-order cakes in Arifwala, Punjab. Every cake is baked after you order it.",
+    "Homemade, made-to-order cakes in Punjab. Every cake is baked after you order it.",
   openGraph: {
     type: "website",
-    siteName: "Sweet Bites Arifwala",
+    siteName: "Sweet Bites",
     locale: "en_PK",
   },
 };

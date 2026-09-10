@@ -178,11 +178,16 @@ export async function lookupCustomerByPhone(phone: string) {
   return data;
 }
 
+// Lahore and Pattoki share these tables but have no admin dashboard -
+// this one only ever manages Arifwala's rows.
+const ADMIN_BRANCH = "arifwala";
+
 export async function getAdminCategories() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("categories")
     .select("*, products(count)")
+    .eq("branch", ADMIN_BRANCH)
     // sort_order defaults to 0, so an unarranged list is all ties - and
     // Postgres is free to return ties in any order, which it changes as
     // soon as a row is updated. Without a tiebreaker the list visibly
@@ -201,6 +206,7 @@ export async function getAdminProducts() {
   const { data } = await supabase
     .from("products")
     .select("*, categories ( id, name, slug )")
+    .eq("branch", ADMIN_BRANCH)
     .order("sort_order")
     .order("name");
 
@@ -222,6 +228,7 @@ export async function getAllReviews() {
   const { data } = await supabase
     .from("reviews")
     .select("*")
+    .eq("branch", ADMIN_BRANCH)
     .order("created_at", { ascending: false });
 
   return data ?? [];
@@ -232,6 +239,7 @@ export async function getDeliveryAreasAdmin() {
   const { data } = await supabase
     .from("delivery_areas")
     .select("*")
+    .eq("branch", ADMIN_BRANCH)
     .order("sort_order")
     .order("name");
   return data ?? [];

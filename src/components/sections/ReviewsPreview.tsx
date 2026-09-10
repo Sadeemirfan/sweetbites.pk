@@ -3,15 +3,16 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ReviewCard } from "@/components/ui/ReviewCard";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { getApprovedReviews } from "@/lib/supabase/queries";
+import type { BranchInfo } from "@/lib/branches";
 
-export async function ReviewsPreview() {
-  const reviews = await getApprovedReviews(3);
+export async function ReviewsPreview({ branchInfo }: { branchInfo: BranchInfo }) {
+  const reviews = await getApprovedReviews(branchInfo.slug, 3);
 
   return (
     <Section tone="cream">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeader eyebrow="Reviews" title="What Arifwala says" />
-        <ButtonLink variant="outline" href="/reviews">
+        <SectionHeader eyebrow="Reviews" title={`What ${branchInfo.city} says`} />
+        <ButtonLink variant="outline" href={`/${branchInfo.slug}/reviews`}>
           Read all reviews
         </ButtonLink>
       </div>

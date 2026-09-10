@@ -3,8 +3,8 @@ import { HeroWords } from "@/components/motion/HeroWords";
 import { MagneticLink } from "@/components/motion/MagneticButton";
 import { earliestDate } from "@/lib/availability";
 import { formatLongDate } from "@/lib/utils/format";
-import { DEFAULT_WHATSAPP_MESSAGE, whatsappLink } from "@/lib/utils/whatsapp";
-import { BUSINESS } from "@/lib/constants";
+import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+import type { BranchInfo } from "@/lib/branches";
 
 /**
  * Type-only hero, at the owner's direction: no logo, no 3D cake, no
@@ -18,23 +18,25 @@ import { BUSINESS } from "@/lib/constants";
  * emptiness reads as confidence rather than as something failing to
  * load.
  */
-export function Hero() {
+export function Hero({ branchInfo }: { branchInfo: BranchInfo }) {
   // Live earliest-date line (§9) - recomputed per request, and it
-  // already respects the 6 PM Arifwala cutoff from §8.
+  // already respects the branch's 6 PM cutoff from §8.
   const readyDate = formatLongDate(earliestDate());
 
   return (
-    // Light pink, so the section reads dark-on-light like the rest of the
-    // site instead of light-on-dark - every child below flips accordingly.
-    <section className="relative overflow-hidden bg-blush text-ink">
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-7 px-4 py-24 text-center md:px-6 md:py-32">
-        <span className="eyebrow text-rosewood">Made to order in Arifwala</span>
+    // Dark rosewood - the same brand tone already used in the "Custom
+    // Cakes" band and the footer, not a separate hero-only colour. wipe-b
+    // gives it the same angled edge into the section below (§14) that
+    // every other dark band on the site already uses.
+    <section className="wipe-b relative overflow-hidden bg-rosewood-d text-cream-100">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-7 px-4 pb-[calc(6rem+var(--wipe-h))] pt-24 text-center md:px-6 md:pb-[calc(8rem+var(--wipe-h))] md:pt-32">
+        <span className="eyebrow text-cream-200">Made to order in {branchInfo.city}</span>
 
-        <h1 className="text-3xl text-ink">
-          <HeroWords text={BUSINESS.tagline} />
+        <h1 className="text-3xl text-cream-50">
+          <HeroWords text={branchInfo.tagline} />
         </h1>
 
-        <p className="max-w-xl text-base text-ink/75 md:text-lg">
+        <p className="max-w-xl text-base text-cream-200 md:text-lg">
           Every cake is baked after you order it. Nothing is pre-made, nothing sits in a display
           case. That is why it takes two days, and why it tastes like it does.
         </p>
@@ -42,7 +44,7 @@ export function Hero() {
         {/* §14 - the two hero CTAs are the magnetic buttons. */}
         <div className="mt-1 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:justify-center">
           <MagneticLink
-            href={whatsappLink(DEFAULT_WHATSAPP_MESSAGE)}
+            href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
             fillClassName="bg-[#04301A]/15"
             className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-whatsapp px-6 text-base font-medium text-[#04301A] sm:w-auto"
@@ -51,9 +53,9 @@ export function Hero() {
             Order on WhatsApp
           </MagneticLink>
           <MagneticLink
-            href="/gallery"
-            fillClassName="bg-ink/8"
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-ink/25 px-6 text-base font-medium text-ink sm:w-auto"
+            href={`/${branchInfo.slug}/gallery`}
+            fillClassName="bg-cream-100/10"
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-cream-100/30 px-6 text-base font-medium text-cream-50 sm:w-auto"
           >
             Browse the gallery
           </MagneticLink>
@@ -61,9 +63,9 @@ export function Hero() {
 
         {/* Centred, so a left rule would hang off nothing - a hairline
             above it does the separating instead. */}
-        <p className="mt-4 border-t border-ink/15 pt-5 text-sm text-ink/75">
+        <p className="mt-4 border-t border-cream-100/15 pt-5 text-sm text-cream-200">
           The earliest we can have your cake ready is{" "}
-          <span className="text-rosewood-d">{readyDate}</span>.
+          <span className="text-cream-50">{readyDate}</span>.
         </p>
       </div>
     </section>

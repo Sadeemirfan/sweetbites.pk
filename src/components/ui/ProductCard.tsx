@@ -3,8 +3,8 @@ import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { WhatsAppIcon } from "@/components/ui/Button";
 import { TiltCard } from "@/components/motion/TiltCard";
-import { formatPrice } from "@/lib/utils/format";
 import { productWhatsappLink } from "@/lib/utils/whatsapp";
+import type { BranchInfo } from "@/lib/branches";
 import type { Product } from "@/types/catalogue";
 
 /**
@@ -16,20 +16,23 @@ import type { Product } from "@/types/catalogue";
 export function ProductCard({
   product,
   categorySlug,
+  branchInfo,
 }: {
   product: Product;
   categorySlug: string;
+  branchInfo: BranchInfo;
 }) {
-  const href = `/gallery/${categorySlug}/${product.slug}`;
+  const href = `/${branchInfo.slug}/gallery/${categorySlug}/${product.slug}`;
   const firstSize = product.sizes[0];
 
-  const waHref = productWhatsappLink({
+  const waHref = productWhatsappLink(branchInfo.whatsappNumber, {
+    businessName: branchInfo.name,
+    branch: branchInfo.slug,
     name: product.name,
     categorySlug,
     productSlug: product.slug,
     size: firstSize?.label,
     flavor: product.flavors[0],
-    price: product.startingPrice,
   });
 
   return (
@@ -61,21 +64,11 @@ export function ProductCard({
             <p className="line-clamp-2 text-sm text-ink/70">{product.description}</p>
           ) : null}
 
-          <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-            {/* §14 - the price underline draws in --ghee on hover, using
-                the --card-hover value TiltCard sets. */}
-            <p className="relative inline-block text-base font-medium text-ghee">
-              <span>
-                {product.sizes.length > 1 ? "From " : ""}
-                {formatPrice(product.startingPrice)}
-              </span>
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-0.5 left-0 h-px w-full origin-left bg-ghee transition-transform duration-300"
-                style={{ transform: "scaleX(var(--card-hover, 0))" }}
-              />
-            </p>
-
+          {/* No price here by design - the card photo is often a stand-in
+              rather than the exact item, so a price next to it would
+              claim an accuracy the photo can't back up. See the Menu
+              page for real, current prices. */}
+          <div className="mt-auto flex items-center justify-end gap-3 pt-3">
             <a
               href={waHref}
               target="_blank"

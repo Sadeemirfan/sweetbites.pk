@@ -2,19 +2,17 @@ import type { ImageLoaderProps } from "next/image";
 
 /**
  * `sharp` doesn't run on Cloudflare Workers, so next/image's default
- * loader can't optimize images at request time. This loader defers to
- * Cloudflare's Image Resizing (`/cdn-cgi/image/...`), which is free to
- * enable on any zone proxied through Cloudflare. In dev it's a no-op so
- * `next dev` keeps serving images directly.
+ * loader can't optimize images at request time. Cloudflare's Image
+ * Resizing (`/cdn-cgi/image/...`) is the intended replacement, but it
+ * only works on a zone (a real domain in the account) - not on the
+ * *.workers.dev preview subdomain, where it 404s. Serving the original
+ * file everywhere is a temporary tradeoff (slightly bigger images) until
+ * sweetbites.pk is attached and Image Resizing is confirmed on for that
+ * zone - re-enable the /cdn-cgi/image/ path below at that point.
  */
-export default function cloudflareImageLoader({ src, width, quality }: ImageLoaderProps): string {
-  if (process.env.NODE_ENV === "development") {
-    // No Cloudflare proxy locally - serve the file as-is. The width is kept
-    // in a harmless query param (ignored by static serving) purely so this
-    // loader still varies its output by width, which next/image checks for.
-    return `${src}?w=${width}`;
-  }
-
-  const params = [`width=${width}`, `quality=${quality ?? 75}`, "format=auto"];
-  return `/cdn-cgi/image/${params.join(",")}${src.startsWith("/") ? "" : "/"}${src}`;
+export default function cloudflareImageLoader({ src, width }: ImageLoaderProps): string {
+  // The width is kept in a harmless query param (ignored by static
+  // serving) purely so this loader still varies its output by width,
+  // which next/image checks for.
+  return `${src}?w=${width}`;
 }

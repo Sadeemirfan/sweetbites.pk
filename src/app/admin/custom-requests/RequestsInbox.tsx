@@ -171,6 +171,7 @@ export function RequestsInbox({ requests }: { requests: Request[] }) {
             {request.phone ? (
               <a
                 href={whatsappLink(
+                  `92${request.phone.replace(/\D/g, "").replace(/^0/, "")}`,
                   `Assalam-o-Alaikum${request.name ? ` ${request.name}` : ""},\n\n` +
                     `About your custom cake request${
                       request.requiredDate ? ` for ${request.requiredDate}` : ""
@@ -179,9 +180,6 @@ export function RequestsInbox({ requests }: { requests: Request[] }) {
                       ? `We can do it for ${formatPrice(request.quotedPrice)}.\n\n`
                       : "") +
                     `- Sweet Bites Arifwala`
-                ).replace(
-                  /wa\.me\/\d+/,
-                  `wa.me/92${request.phone.replace(/\D/g, "").replace(/^0/, "")}`
                 )}
                 target="_blank"
                 rel="noopener noreferrer"

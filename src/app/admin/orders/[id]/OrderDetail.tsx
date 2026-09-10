@@ -56,13 +56,14 @@ export function OrderDetail({ order }: { order: any }) {
     TIME_SLOTS.find((slot) => slot.value === order.time_slot)?.label ?? order.time_slot ?? "-";
 
   /** §12 - one tap to WhatsApp the customer, pre-addressed and pre-written. */
+  const customerNumber = `92${String(order.whatsapp || order.phone)
+    .replace(/\D/g, "")
+    .replace(/^0/, "")}`;
   const customerWa = whatsappLink(
+    customerNumber,
     `Assalam-o-Alaikum${order.customer_name ? ` ${order.customer_name}` : ""},\n\n` +
       `About your order ${order.order_number} for ${order.required_date}:\n\n` +
       `- Sweet Bites Arifwala`
-  ).replace(
-    /wa\.me\/\d+/,
-    `wa.me/92${String(order.whatsapp || order.phone).replace(/\D/g, "").replace(/^0/, "")}`
   );
 
   function saveField(fields: Parameters<typeof updateOrderFields>[1], message: string) {

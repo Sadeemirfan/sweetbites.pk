@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils/cn";
-import { DEFAULT_WHATSAPP_MESSAGE, whatsappLink } from "@/lib/utils/whatsapp";
+import { whatsappLink } from "@/lib/utils/whatsapp";
 
 type WhatsAppCtaProps = {
+  whatsappNumber: string;
+  message: string;
   className?: string;
   label?: string;
   /** "ghee" for the header CTA (brand gold); "whatsapp" for buttons that
@@ -15,13 +17,15 @@ const TONE_CLASSES = {
 } as const;
 
 export function WhatsAppCta({
+  whatsappNumber,
+  message,
   className,
   label = "Order on WhatsApp",
   tone = "ghee",
 }: WhatsAppCtaProps) {
   return (
     <a
-      href={whatsappLink(DEFAULT_WHATSAPP_MESSAGE)}
+      href={whatsappLink(whatsappNumber, message)}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(

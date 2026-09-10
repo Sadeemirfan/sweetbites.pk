@@ -4,26 +4,34 @@ import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { WhatsAppCta } from "@/components/layout/WhatsAppCta";
-import { NAV_LINKS } from "@/components/layout/nav-links";
-import { CartButton } from "@/components/cart/CartButton";
+import { BranchSwitcher } from "@/components/layout/BranchSwitcher";
+import { navLinks } from "@/components/layout/nav-links";
 import { cn } from "@/lib/utils/cn";
+import { BRANCHES, BRANCH_INFO, type BranchInfo } from "@/lib/branches";
+import { defaultWhatsappMessage } from "@/lib/utils/whatsapp";
 
-export function Header() {
+export function Header({ branchInfo }: { branchInfo: BranchInfo }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const links = navLinks(branchInfo.slug);
+  const waMessage = defaultWhatsappMessage(branchInfo.name);
 
   return (
     <header className="sticky top-0 z-40 border-b border-cream-200 bg-cream-50">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center" onClick={() => setIsDrawerOpen(false)}>
+        <Link
+          href="/"
+          className="flex items-center"
+          onClick={() => setIsDrawerOpen(false)}
+        >
           {/* The logo is 1167x654, so width sets height at ~0.56x. At
               110px it stands 62px tall and clears the 80px bar with room
               either side; anything wider overflows and clips the cupcake
               mark off the top. */}
-          <Logo width={110} priority />
+          <Logo width={110} priority alt={branchInfo.name} />
         </Link>
 
         <nav className="hidden lg:flex lg:items-center lg:gap-8">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -35,8 +43,15 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-1 lg:gap-3">
-          <CartButton />
-          <WhatsAppCta className="hidden lg:inline-flex" />
+          <div className="hidden lg:block">
+            <BranchSwitcher current={branchInfo.slug} />
+          </div>
+
+          <WhatsAppCta
+            whatsappNumber={branchInfo.whatsappNumber}
+            message={waMessage}
+            className="hidden lg:inline-flex"
+          />
 
           <button
             type="button"
@@ -66,7 +81,7 @@ export function Header() {
           isDrawerOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {NAV_LINKS.map((link) => (
+        {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
@@ -76,7 +91,26 @@ export function Header() {
             {link.label}
           </Link>
         ))}
-        <WhatsAppCta className="mt-6 flex w-full" />
+
+        <span className="eyebrow mt-4 mb-1 text-rosewood">Switch city</span>
+        <div className="flex flex-wrap gap-2 pb-2">
+          {BRANCHES.filter((branch) => branch !== branchInfo.slug).map((branch) => (
+            <Link
+              key={branch}
+              href={`/${branch}`}
+              onClick={() => setIsDrawerOpen(false)}
+              className="flex min-h-11 items-center rounded-md border border-cream-200 px-4 text-sm text-ink transition-colors hover:border-rosewood hover:text-rosewood"
+            >
+              {BRANCH_INFO[branch].city}
+            </Link>
+          ))}
+        </div>
+
+        <WhatsAppCta
+          whatsappNumber={branchInfo.whatsappNumber}
+          message={waMessage}
+          className="mt-6 flex w-full"
+        />
       </div>
     </header>
   );

@@ -1,14 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import type { Branch } from "@/lib/branches";
 import type { CategoryWithCount } from "@/types/catalogue";
 
-export function CategoryCard({ category }: { category: CategoryWithCount }) {
+export function CategoryCard({
+  category,
+  branch,
+}: {
+  category: CategoryWithCount;
+  branch: Branch;
+}) {
   const count = category.productCount;
 
   return (
     <Link
-      href={`/gallery/${category.slug}`}
+      href={`/${branch}/gallery/${category.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-lg border border-cream-200 bg-cream-50 shadow-cream transition-colors hover:border-rosewood/40"
     >
       <div className="relative aspect-[3/2] w-full overflow-hidden">

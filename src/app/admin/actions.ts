@@ -114,7 +114,7 @@ export async function saveCategory(input: {
   }
 
   revalidatePath("/admin/categories");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -131,7 +131,7 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
   }
 
   revalidatePath("/admin/categories");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -145,7 +145,7 @@ export async function reorderCategories(ids: string[]): Promise<ActionResult> {
   );
 
   revalidatePath("/admin/categories");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -198,7 +198,7 @@ export async function saveProduct(input: {
   }
 
   revalidatePath("/admin/products");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -208,7 +208,7 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
   if (error) return { ok: false, message: "Couldn't delete that cake." };
 
   revalidatePath("/admin/products");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -218,7 +218,7 @@ export async function reorderProducts(ids: string[]): Promise<ActionResult> {
     ids.map((id, index) => supabase.from("products").update({ sort_order: index }).eq("id", id))
   );
   revalidatePath("/admin/products");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -234,7 +234,7 @@ export async function toggleProductFlag(
   if (error) return { ok: false, message: "Couldn't update that." };
 
   revalidatePath("/admin/products");
-  revalidatePath("/gallery");
+  revalidatePath("/arifwala/gallery");
   return { ok: true };
 }
 
@@ -246,7 +246,7 @@ export async function setReviewApproval(id: string, approved: boolean): Promise<
   if (error) return { ok: false, message: "Couldn't update that review." };
 
   revalidatePath("/admin/reviews");
-  revalidatePath("/reviews");
+  revalidatePath("/arifwala/reviews");
   return { ok: true };
 }
 
@@ -256,7 +256,7 @@ export async function deleteReview(id: string): Promise<ActionResult> {
   if (error) return { ok: false, message: "Couldn't delete that review." };
 
   revalidatePath("/admin/reviews");
-  revalidatePath("/reviews");
+  revalidatePath("/arifwala/reviews");
   return { ok: true };
 }
 
@@ -303,7 +303,6 @@ export async function toggleBlackout(
   }
 
   revalidatePath("/admin/availability");
-  revalidatePath("/order");
   return { ok: true };
 }
 
@@ -332,8 +331,7 @@ export async function saveDeliveryArea(input: {
   if (error) return { ok: false, message: "Couldn't save that area." };
 
   revalidatePath("/admin/delivery-areas");
-  revalidatePath("/order");
-  revalidatePath("/contact");
+  revalidatePath("/arifwala/contact");
   return { ok: true };
 }
 
@@ -362,6 +360,6 @@ export async function saveSetting(key: string, value: unknown): Promise<ActionRe
   if (error) return { ok: false, message: "Couldn't save that setting." };
 
   revalidatePath("/admin/settings");
-  revalidatePath("/", "layout");
+  revalidatePath("/arifwala", "layout");
   return { ok: true };
 }

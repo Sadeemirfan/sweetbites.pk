@@ -12,12 +12,20 @@ type LogoProps = {
   width?: number;
   className?: string;
   priority?: boolean;
+  /** Same mark across all three branches - only the alt text names the
+      specific shop, for accessibility and SEO. */
+  alt?: string;
 };
 
-export function Logo({ variant = "rosewood", width = 160, className, priority }: LogoProps) {
+export function Logo({
+  variant = "rosewood",
+  width = 160,
+  className,
+  priority,
+  alt = "Sweet Bites",
+}: LogoProps) {
   const clampedWidth = Math.min(width, MAX_WIDTH);
   const src = variant === "cream" ? "/logo-cream.png" : "/logo-transparent.png";
-  const alt = "Sweet Bites Arifwala";
 
   return (
     <Image

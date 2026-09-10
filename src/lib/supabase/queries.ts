@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Branch } from "@/lib/branches";
 import type {
   CategoryRow,
   CategoryWithCount,
@@ -14,6 +15,9 @@ import type {
  * and unapproved reviews are filtered out by the database rather than by
  * these queries - the explicit `.eq("is_active", true)` calls are belt
  * and braces, and keep the intent readable at the call site.
+ *
+ * Every function also takes a `branch` - Arifwala, Lahore, and Pattoki
+ * share these tables, each row tagged by which branch it belongs to.
  */
 
 function parseSizes(value: ProductRow["sizes"]): ProductSize[] {
@@ -59,11 +63,12 @@ function toProduct(row: ProductRowWithCategory): Product {
 
 const PRODUCT_SELECT = "*, categories!inner(id, name, slug)";
 
-export async function getCategoriesWithCounts(): Promise<CategoryWithCount[]> {
+export async function getCategoriesWithCounts(branch: Branch): Promise<CategoryWithCount[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("categories")
     .select("*, products(count)")
+    .eq("branch", branch)
     .eq("is_active", true)
     .order("sort_order")
     .order("name");
@@ -78,11 +83,12 @@ export async function getCategoriesWithCounts(): Promise<CategoryWithCount[]> {
   });
 }
 
-export async function getCategoryBySlug(slug: string): Promise<CategoryRow | null> {
+export async function getCategoryBySlug(branch: Branch, slug: string): Promise<CategoryRow | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("categories")
     .select("*")
+    .eq("branch", branch)
     .eq("slug", slug)
     .eq("is_active", true)
     .maybeSingle();
@@ -104,11 +110,12 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
   return (data as ProductRowWithCategory[] | null)?.map(toProduct) ?? [];
 }
 
-export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
+export async function getFeaturedProducts(branch: Branch, limit = 6): Promise<Product[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
+    .eq("branch", branch)
     .eq("is_active", true)
     .eq("is_featured", true)
     .order("sort_order")
@@ -123,6 +130,7 @@ export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
 }
 
 export async function getProductBySlug(
+  branch: Branch,
   categorySlug: string,
   productSlug: string
 ): Promise<Product | null> {
@@ -130,6 +138,7 @@ export async function getProductBySlug(
   const { data } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
+    .eq("branch", branch)
     .eq("slug", productSlug)
     .eq("categories.slug", categorySlug)
     .eq("is_active", true)
@@ -138,14 +147,15 @@ export async function getProductBySlug(
   return data ? toProduct(data as ProductRowWithCategory) : null;
 }
 
-/** Every active product, for sitemap generation. */
-export async function getAllProductPaths(): Promise<
-  { categorySlug: string; productSlug: string; updatedAt: string }[]
-> {
+/** Every active product for one branch, for sitemap generation. */
+export async function getAllProductPaths(
+  branch: Branch
+): Promise<{ categorySlug: string; productSlug: string; updatedAt: string }[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
     .select("slug, created_at, categories!inner(slug)")
+    .eq("branch", branch)
     .eq("is_active", true);
 
   return (
@@ -159,11 +169,12 @@ export async function getAllProductPaths(): Promise<
   );
 }
 
-export async function getApprovedReviews(limit?: number): Promise<ReviewRow[]> {
+export async function getApprovedReviews(branch: Branch, limit?: number): Promise<ReviewRow[]> {
   const supabase = await createClient();
   let query = supabase
     .from("reviews")
     .select("*")
+    .eq("branch", branch)
     .eq("is_approved", true)
     .order("created_at", { ascending: false });
 
@@ -175,8 +186,10 @@ export async function getApprovedReviews(limit?: number): Promise<ReviewRow[]> {
 }
 
 /** Feeds AggregateRating in the Bakery schema (§15). */
-export async function getReviewAggregate(): Promise<{ count: number; average: number } | null> {
-  const reviews = await getApprovedReviews();
+export async function getReviewAggregate(
+  branch: Branch
+): Promise<{ count: number; average: number } | null> {
+  const reviews = await getApprovedReviews(branch);
   const rated = reviews.filter((review) => typeof review.rating === "number");
   if (!rated.length) return null;
 
@@ -187,11 +200,12 @@ export async function getReviewAggregate(): Promise<{ count: number; average: nu
   };
 }
 
-export async function getDeliveryAreas() {
+export async function getDeliveryAreas(branch: Branch) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("delivery_areas")
     .select("*")
+    .eq("branch", branch)
     .eq("is_active", true)
     .order("sort_order")
     .order("name");

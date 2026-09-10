@@ -25,6 +25,13 @@ export type AvailabilityOptions = {
   /** Weekday numbers (0 = Sunday) the shop is closed. Currently none -    *  Sweet Bites is open all seven days (§0). */
   closedWeekdays?: number[];
   now?: Date;
+  /**
+   * Lets today through the lead-time floor when a slot with enough
+   * same-day notice still exists (see `hasSameDaySlot`). Off by default -
+   * custom-cake requests and manual admin entry don't get it, only the
+   * regular checkout does.
+   */
+  allowSameDay?: boolean;
 };
 
 type KarachiNow = { year: number; month: number; day: number; hour: number };
@@ -86,6 +93,34 @@ export function isAfterCutoff(now: Date = new Date()): boolean {
 }
 
 /**
+ * Same-day exception (owner's rule, added after launch): the standard
+ * promise is still "two days", but a same-day order is taken too, as
+ * long as the chosen slot starts at least this many hours from now.
+ */
+export const SAME_DAY_MIN_NOTICE_HOURS = 5;
+
+/** 24-hour Asia/Karachi start time for each bookable slot. */
+const SLOT_START_HOUR: Record<string, number> = {
+  "10-1": 10,
+  "1-4": 13,
+  "4-7": 16,
+  "7-10": 19,
+  "after-10": 22,
+};
+
+/** True once `slotValue` starts with enough same-day notice from `now`. */
+export function isSlotBookableToday(slotValue: string, now: Date = new Date()): boolean {
+  const startHour = SLOT_START_HOUR[slotValue];
+  if (startHour === undefined) return false;
+  return startHour - karachiNow(now).hour >= SAME_DAY_MIN_NOTICE_HOURS;
+}
+
+/** True when at least one slot today still clears the same-day notice. */
+export function hasSameDaySlot(now: Date = new Date()): boolean {
+  return Object.keys(SLOT_START_HOUR).some((slot) => isSlotBookableToday(slot, now));
+}
+
+/**
  * §8 rule 1 + rule 2: today + lead days, plus one more day when the
  * order is placed after 6 PM, because ingredients are bought in the
  * morning.
@@ -132,12 +167,17 @@ export function checkDate(date: Date, options: AvailabilityOptions = {}): DateAv
     blackouts = [],
     closedWeekdays = [],
     now = new Date(),
+    allowSameDay = false,
   } = options;
 
   const iso = toISODate(date);
+  const isToday = iso === toISODate(today(now));
+  const sameDayException = allowSameDay && isToday && hasSameDaySlot(now);
 
-  if (iso < toISODate(earliestDate(leadTimeDays, now))) {
-    return { available: false, reason: `Needs ${leadTimeDays} days` };
+  if (iso < toISODate(earliestDate(leadTimeDays, now)) && !sameDayException) {
+    return isToday
+      ? { available: false, reason: `Needs ${SAME_DAY_MIN_NOTICE_HOURS} hours' notice` }
+      : { available: false, reason: `Needs ${leadTimeDays} days` };
   }
 
   const blackout = blackouts.find((entry) => entry.date === iso);

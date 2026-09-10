@@ -16,6 +16,9 @@
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
+/** Matches `create type public.branch as enum (...)` in the branches migration. */
+export type BranchEnum = "arifwala" | "lahore" | "pattoki";
+
 export interface Database {
   public: {
     Tables: {
@@ -58,6 +61,7 @@ export interface Database {
           sort_order: number;
           is_active: boolean;
           created_at: string;
+          branch: BranchEnum;
         };
         Insert: {
           id?: string;
@@ -68,6 +72,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Update: {
           id?: string;
@@ -78,6 +83,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Relationships: [];
       };
@@ -99,6 +105,7 @@ export interface Database {
           is_active: boolean;
           sort_order: number;
           created_at: string;
+          branch: BranchEnum;
         };
         Insert: {
           id?: string;
@@ -117,6 +124,7 @@ export interface Database {
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Update: {
           id?: string;
@@ -135,6 +143,7 @@ export interface Database {
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Relationships: [
           {
@@ -175,6 +184,7 @@ export interface Database {
           is_inside_city: boolean;
           is_active: boolean;
           sort_order: number;
+          branch: BranchEnum;
         };
         Insert: {
           id?: string;
@@ -183,6 +193,7 @@ export interface Database {
           is_inside_city?: boolean;
           is_active?: boolean;
           sort_order?: number;
+          branch?: BranchEnum;
         };
         Update: {
           id?: string;
@@ -191,6 +202,7 @@ export interface Database {
           is_inside_city?: boolean;
           is_active?: boolean;
           sort_order?: number;
+          branch?: BranchEnum;
         };
         Relationships: [];
       };
@@ -685,6 +697,7 @@ export interface Database {
           image_url: string | null;
           is_approved: boolean;
           created_at: string;
+          branch: BranchEnum;
         };
         Insert: {
           id?: string;
@@ -694,6 +707,7 @@ export interface Database {
           image_url?: string | null;
           is_approved?: boolean;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Update: {
           id?: string;
@@ -703,6 +717,7 @@ export interface Database {
           image_url?: string | null;
           is_approved?: boolean;
           created_at?: string;
+          branch?: BranchEnum;
         };
         Relationships: [];
       };
@@ -761,7 +776,9 @@ export interface Database {
         }[];
       };
     };
-    Enums: Record<string, never>;
+    Enums: {
+      branch: BranchEnum;
+    };
     CompositeTypes: Record<string, never>;
   };
 }
