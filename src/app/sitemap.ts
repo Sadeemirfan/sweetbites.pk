@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/constants";
 import { BRANCHES } from "@/lib/branches";
 import { BLOG_POSTS } from "@/lib/blog";
+import { SHOWCASE_IMAGES } from "@/lib/showcase";
 import { getCategoriesWithCounts, getAllProductPaths } from "@/lib/supabase/queries";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -20,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { path: "", priority: 0.9 },
         { path: "/gallery", priority: 0.9 },
         { path: "/menu", priority: 0.8 },
+        ...(SHOWCASE_IMAGES[branch].length ? [{ path: "/our-work", priority: 0.7 }] : []),
         { path: "/reviews", priority: 0.7 },
         { path: "/about", priority: 0.6 },
         { path: "/contact", priority: 0.7 },
