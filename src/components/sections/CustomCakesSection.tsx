@@ -1,12 +1,10 @@
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/Section";
 import type { BranchInfo } from "@/lib/branches";
-import { SHOWCASE_IMAGES } from "@/lib/showcase";
 import { whatsappLink } from "@/lib/utils/whatsapp";
 
 export function CustomCakesSection({ branchInfo }: { branchInfo: BranchInfo }) {
   const message = `Assalam-o-Alaikum ${branchInfo.name}\n\nI'd like to ask about a custom cake.\n\nSent from sweetbites.pk`;
-  const hasShowcase = SHOWCASE_IMAGES[branchInfo.slug].length > 0;
 
   return (
     <section className="wipe-tb bg-rosewood-d py-[calc(var(--wipe-h)+3rem)] text-cream-100 md:py-[calc(var(--wipe-h)+5rem)]">
@@ -19,21 +17,14 @@ export function CustomCakesSection({ branchInfo }: { branchInfo: BranchInfo }) {
             tone="dark"
             align="center"
           />
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <ButtonLink
-              variant="whatsapp"
-              href={whatsappLink(branchInfo.whatsappNumber, message)}
-              external
-            >
-              <WhatsAppIcon />
-              Ask about a custom cake
-            </ButtonLink>
-            {hasShowcase ? (
-              <ButtonLink variant="outline-dark" href={`/${branchInfo.slug}/our-work`}>
-                See our work
-              </ButtonLink>
-            ) : null}
-          </div>
+          <ButtonLink
+            variant="whatsapp"
+            href={whatsappLink(branchInfo.whatsappNumber, message)}
+            external
+          >
+            <WhatsAppIcon />
+            Ask about a custom cake
+          </ButtonLink>
           <p className="text-sm text-cream-200">
             Custom work needs at least three days. Five or more for elaborate designs.
           </p>
