@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { CategoryCard } from "@/components/ui/CategoryCard";
+import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ProductCard } from "@/components/ui/ProductCard";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/seo/jsonld";
-import { getCategoriesWithCounts } from "@/lib/supabase/queries";
+import { getAllProducts } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
+import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
 type Params = { branch: string };
 
@@ -32,7 +34,7 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
 
-  const categories = await getCategoriesWithCounts(branch);
+  const products = await getAllProducts(branch);
 
   return (
     <>
@@ -49,14 +51,19 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
         <SectionHeader
           eyebrow="The catalogue"
           title="Every cake we make"
-          lead="Pick a category to see sizes and flavours - the menu page has current prices."
+          lead="Tap any cake for sizes and flavours - message us on WhatsApp for the price."
         />
 
         <div className="mt-10">
-          {categories.length ? (
+          {products.length ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} branch={branch} />
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  categorySlug={product.category?.slug ?? ""}
+                  branchInfo={branchInfo}
+                />
               ))}
             </div>
           ) : (
@@ -67,6 +74,19 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
             />
           )}
         </div>
+
+        {products.length ? (
+          <div className="mt-10 flex justify-center">
+            <ButtonLink
+              variant="whatsapp"
+              href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
+              external
+            >
+              <WhatsAppIcon />
+              Order on WhatsApp
+            </ButtonLink>
+          </div>
+        ) : null}
       </Section>
     </>
   );

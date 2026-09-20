@@ -110,6 +110,21 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
   return (data as ProductRowWithCategory[] | null)?.map(toProduct) ?? [];
 }
 
+/** Every active product for a branch, across all categories - the flat gallery grid. */
+export async function getAllProducts(branch: Branch): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
+    .eq("branch", branch)
+    .eq("is_active", true)
+    .order("sort_order")
+    .order("name");
+
+  if (error) throw error;
+  return (data as ProductRowWithCategory[] | null)?.map(toProduct) ?? [];
+}
+
 export async function getFeaturedProducts(branch: Branch, limit = 6): Promise<Product[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

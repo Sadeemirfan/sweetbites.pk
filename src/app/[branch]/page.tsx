@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/Hero";
-import { CategoryGrid } from "@/components/sections/CategoryGrid";
 import { Bestsellers } from "@/components/sections/Bestsellers";
 import { CustomCakesSection } from "@/components/sections/CustomCakesSection";
 import { WhySweetBites } from "@/components/sections/WhySweetBites";
@@ -53,7 +52,6 @@ export default async function BranchHomePage({ params }: { params: Promise<Param
     <>
       <JsonLd schema={bakerySchema(branchInfo, aggregate, reviews)} />
       <Hero branchInfo={branchInfo} />
-      <CategoryGrid branchInfo={branchInfo} />
       <Bestsellers branchInfo={branchInfo} />
       <CustomCakesSection branchInfo={branchInfo} />
       <WhySweetBites branchInfo={branchInfo} />
