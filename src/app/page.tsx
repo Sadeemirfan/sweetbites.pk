@@ -6,6 +6,7 @@ import { ReviewCard } from "@/components/ui/ReviewCard";
 import { Faq } from "@/components/ui/Faq";
 import { BRANCHES, BRANCH_INFO } from "@/lib/branches";
 import { getApprovedReviews } from "@/lib/supabase/queries";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: "Sweet Bites - Choose Your City",
@@ -166,6 +167,7 @@ export default async function CitySelectorPage() {
           Privacy Policy
         </Link>
       </div>
+      <GoogleAnalytics />
     </main>
   );
 }

@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 
 export function generateStaticParams() {
   return BRANCHES.map((branch) => ({ branch }));
@@ -27,6 +28,7 @@ export default async function BranchLayout({
       <main className="flex-1 pb-20 lg:pb-0">{children}</main>
       <Footer branchInfo={branchInfo} />
       <MobileBottomBar branchInfo={branchInfo} />
+      <GoogleAnalytics />
     </div>
   );
 }
