@@ -5,8 +5,6 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Prose } from "@/components/ui/Prose";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { getBranchInfo, isBranch } from "@/lib/branches";
-import { getDeliveryAreas } from "@/lib/supabase/queries";
-import { formatPrice } from "@/lib/utils/format";
 
 type Params = { branch: string };
 
@@ -34,10 +32,6 @@ export default async function DeliveryPolicyPage({ params }: { params: Promise<P
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
 
-  const areas = await getDeliveryAreas(branch);
-  const insideCity = areas.filter((area) => area.is_inside_city);
-  const outside = areas.filter((area) => !area.is_inside_city);
-
   return (
     <Section tone="cream">
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Delivery policy" }]} />
@@ -53,36 +47,10 @@ export default async function DeliveryPolicyPage({ params }: { params: Promise<P
             turn an order down than send one that arrives damaged.
           </p>
 
-          {insideCity.length ? (
-            <p>
-              <strong>Free inside {branchInfo.city} city:</strong>{" "}
-              {insideCity.map((area) => area.name).join(", ")}.
-            </p>
-          ) : null}
-
-          {!areas.length ? (
-            <p>
-              Message us your address on WhatsApp before you order and we&apos;ll confirm whether
-              we can reach you and what delivery costs.
-            </p>
-          ) : null}
-
-          {outside.length ? (
-            <>
-              <h2>Nearby areas and charges</h2>
-              <ul>
-                {outside.map((area) => (
-                  <li key={area.id}>
-                    {area.name} - <strong>{formatPrice(area.fee)}</strong>
-                  </li>
-                ))}
-              </ul>
-              <p>
-                If your area is not listed, message us - we will tell you whether we can reach you
-                and what it would cost before you order.
-              </p>
-            </>
-          ) : null}
+          <p>
+            Message us your address on WhatsApp before you order and we&apos;ll confirm whether
+            we can reach you and what delivery costs.
+          </p>
 
           <h2>Time slots</h2>
           <p>

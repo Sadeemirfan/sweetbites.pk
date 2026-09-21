@@ -8,8 +8,6 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { bakerySchema } from "@/lib/seo/jsonld";
 import { getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
-import { getDeliveryAreas } from "@/lib/supabase/queries";
-import { formatPrice } from "@/lib/utils/format";
 
 type Params = { branch: string };
 
@@ -40,10 +38,6 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
   const { branch } = await params;
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
-
-  const areas = await getDeliveryAreas(branch);
-  const insideCity = areas.filter((area) => area.is_inside_city);
-  const outside = areas.filter((area) => !area.is_inside_city);
 
   const socials = SOCIAL_LABELS.filter((social) => branchInfo.socials[social.key]);
   const mapsLink = branchInfo.geo
@@ -131,36 +125,6 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
                   title={`Map showing ${branchInfo.name}`}
                   className="h-72 w-full border-0"
                 />
-              </div>
-            ) : null}
-
-            {areas.length ? (
-              <div className="rounded-lg border border-cream-200 bg-cream-100 p-5">
-                <h2 className="text-lg text-ink">Where we deliver</h2>
-                {insideCity.length ? (
-                  <div className="mt-3">
-                    <p className="eyebrow text-rosewood">Free inside {branchInfo.city}</p>
-                    <p className="mt-1 text-sm text-ink/75">
-                      {insideCity.map((area) => area.name).join(" · ")}
-                    </p>
-                  </div>
-                ) : null}
-                {outside.length ? (
-                  <div className="mt-4">
-                    <p className="eyebrow text-rosewood">Nearby areas</p>
-                    <ul className="mt-1 flex flex-col gap-1">
-                      {outside.map((area) => (
-                        <li key={area.id} className="flex justify-between gap-4 text-sm">
-                          <span className="text-ink/75">{area.name}</span>
-                          <span className="text-ghee">{formatPrice(area.fee)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                <p className="mt-4 text-sm text-ink/60">
-                  Deliveries after 10:00 PM carry an extra charge, including inside the city.
-                </p>
               </div>
             ) : null}
           </div>
