@@ -1,8 +1,7 @@
 import { WhatsAppIcon } from "@/components/ui/Button";
 import { HeroWords } from "@/components/motion/HeroWords";
 import { MagneticLink } from "@/components/motion/MagneticButton";
-import { earliestDate } from "@/lib/availability";
-import { formatLongDate } from "@/lib/utils/format";
+import { ReadyDate } from "@/components/ui/ReadyDate";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 import type { BranchInfo } from "@/lib/branches";
 
@@ -19,10 +18,6 @@ import type { BranchInfo } from "@/lib/branches";
  * load.
  */
 export function Hero({ branchInfo }: { branchInfo: BranchInfo }) {
-  // Live earliest-date line (§9) - recomputed per request, and it
-  // already respects the branch's 6 PM cutoff from §8.
-  const readyDate = formatLongDate(earliestDate());
-
   return (
     // Dark rosewood - the same brand tone already used in the "Custom
     // Cakes" band and the footer, not a separate hero-only colour. wipe-b
@@ -61,11 +56,15 @@ export function Hero({ branchInfo }: { branchInfo: BranchInfo }) {
           </MagneticLink>
         </div>
 
-        {/* Centred, so a left rule would hang off nothing - a hairline
-            above it does the separating instead. */}
+        {/* §8 + §9 - live earliest-date line. ReadyDate is a client
+            component that computes the date in the browser so the value
+            is always today's, never a build-time or edge-cache snapshot.
+            The SSR pass renders the fallback ("within 2 days") which
+            matches the surrounding copy and avoids a hydration mismatch. */}
         <p className="mt-4 border-t border-cream-100/15 pt-5 text-sm text-cream-200">
           The earliest we can have your cake ready is{" "}
-          <span className="text-cream-50">{readyDate}</span>.
+          <ReadyDate className="text-cream-50" />
+          .
         </p>
       </div>
     </section>

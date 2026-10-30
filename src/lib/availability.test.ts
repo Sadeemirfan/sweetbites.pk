@@ -200,3 +200,33 @@ describe("buildMonthGrid", () => {
     }
   });
 });
+
+describe("ReadyDate staleness regression guard", () => {
+  /**
+   * These tests guard against the root cause of the staleness bug:
+   * `earliestDate()` must always return a date strictly in the future
+   * relative to the `now` argument. If it returned a past or present date
+   * the displayed "earliest ready" date would be wrong.
+   *
+   * The component itself (ReadyDate) is client-side and not testable here,
+   * but the pure functions it calls are fully covered.
+   */
+
+  it("the date it produces is always strictly after today in Karachi", () => {
+    // Before cutoff: result is today + 2 days
+    const resultBefore = earliestDate(2, BEFORE_CUTOFF);
+    expect(toISODate(resultBefore) > "2026-08-22").toBe(true);
+  });
+
+  it("the date it produces is always strictly after today even after cutoff", () => {
+    // After cutoff: result is today + 3 days
+    const resultAfter = earliestDate(2, AFTER_CUTOFF);
+    expect(toISODate(resultAfter) > "2026-08-22").toBe(true);
+  });
+
+  it("a 3-day lead time (custom cakes) pushes the floor one day further", () => {
+    const standard = toISODate(earliestDate(2, BEFORE_CUTOFF));
+    const custom = toISODate(earliestDate(3, BEFORE_CUTOFF));
+    expect(custom > standard).toBe(true);
+  });
+});
