@@ -7,7 +7,6 @@ import { ReviewsPreview } from "@/components/sections/ReviewsPreview";
 import { LocationHours } from "@/components/sections/LocationHours";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bakerySchema } from "@/lib/seo/jsonld";
-import { getApprovedReviews, getReviewAggregate } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { notFound } from "next/navigation";
 
@@ -43,14 +42,9 @@ export default async function BranchHomePage({ params }: { params: Promise<Param
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
 
-  const [aggregate, reviews] = await Promise.all([
-    getReviewAggregate(branch),
-    getApprovedReviews(branch, 5),
-  ]);
-
   return (
     <>
-      <JsonLd schema={bakerySchema(branchInfo, aggregate, reviews)} />
+      <JsonLd schema={bakerySchema(branchInfo)} />
       <Hero branchInfo={branchInfo} />
       <Bestsellers branchInfo={branchInfo} />
       <CustomCakesSection branchInfo={branchInfo} />
