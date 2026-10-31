@@ -43,7 +43,7 @@ export default async function DeliveryPolicyPage({ params }: { params: Promise<P
       />
 
       <div className="max-w-3xl">
-        <SectionHeader eyebrow="Policy" title="Delivery &amp; Pickup" />
+        <SectionHeader as="h1" eyebrow="Policy" title="Delivery &amp; Pickup" />
 
         <Prose className="mt-8">
           <h2>Arifwala Delivery</h2>

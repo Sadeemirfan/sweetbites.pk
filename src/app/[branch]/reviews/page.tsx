@@ -58,6 +58,7 @@ export default async function ReviewsPage({ params }: { params: Promise<Params> 
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Reviews" }]} />
 
       <SectionHeader
+        as="h1"
         eyebrow="Reviews"
         title={`What ${branchInfo.city} says`}
         lead="Every review below is from a real order. We publish the honest ones too."

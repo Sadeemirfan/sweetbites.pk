@@ -43,7 +43,7 @@ export default async function PrivacyPolicyPage({ params }: { params: Promise<Pa
       />
 
       <div className="max-w-3xl">
-        <SectionHeader eyebrow="Policy" title="Privacy Policy" />
+        <SectionHeader as="h1" eyebrow="Policy" title="Privacy Policy" />
 
         <Prose className="mt-8">
           <p>

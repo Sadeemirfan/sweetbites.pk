@@ -64,6 +64,7 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
         <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Gallery" }]} />
 
         <SectionHeader
+          as="h1"
           eyebrow="The catalogue"
           title="Every cake we make"
           lead="Tap any cake for sizes and flavours - message us on WhatsApp for the price."

@@ -8,7 +8,8 @@ type SectionProps = {
    * two other light sections; a light section touching a wiped dark one
    * must stay `cream`, so the clip-path wedge reveals the same tone.
    *
-   * The wipe itself is cut into the dark sections (see globals.css) -    * those are written as plain <section> elements because each carries
+   * The wipe itself is cut into the dark sections (see globals.css) -
+   * those are written as plain <section> elements because each carries
    * its own two-column layout and padding compensation.
    */
   tone?: "cream" | "cream-alt" | "dark";
@@ -38,6 +39,7 @@ export function SectionHeader({
   tone = "cream",
   align = "left",
   className,
+  as: Component = "h2",
 }: {
   eyebrow?: string;
   title: string;
@@ -45,6 +47,7 @@ export function SectionHeader({
   tone?: "cream" | "dark";
   align?: "left" | "center";
   className?: string;
+  as?: "h1" | "h2";
 }) {
   const onDark = tone === "dark";
   return (
@@ -60,7 +63,7 @@ export function SectionHeader({
           {eyebrow}
         </span>
       ) : null}
-      <h2 className={cn("text-xl md:text-2xl", onDark ? "text-cream-50" : "text-ink")}>{title}</h2>
+      <Component className={cn("text-xl md:text-2xl", onDark ? "text-cream-50" : "text-ink")}>{title}</Component>
       {lead ? (
         <p
           className={cn(

@@ -68,7 +68,7 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
       <Section tone="cream">
         <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Contact" }]} />
 
-        <SectionHeader eyebrow="Contact" title="Get in touch" />
+        <SectionHeader as="h1" eyebrow="Contact" title="Get in touch" />
 
         <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="flex flex-col gap-8">

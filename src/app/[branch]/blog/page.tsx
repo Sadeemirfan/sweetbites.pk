@@ -52,6 +52,7 @@ export default async function BlogIndexPage({ params }: { params: Promise<Params
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Blog" }]} />
 
       <SectionHeader
+        as="h1"
         eyebrow="From the kitchen"
         title="Guides &amp; cake stories"
         lead="Honest advice on sizes, flavours, care tips, and choosing the right cake for your celebration."

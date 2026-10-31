@@ -37,7 +37,7 @@ export default async function OrderPolicyPage({ params }: { params: Promise<Para
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Order Policy" }]} />
 
       <div className="max-w-3xl">
-        <SectionHeader eyebrow="Policy" title="Orders &amp; Cancellations" />
+        <SectionHeader as="h1" eyebrow="Policy" title="Orders &amp; Cancellations" />
 
         <Prose className="mt-8">
           <h2>Notice Period (Lead Time)</h2>

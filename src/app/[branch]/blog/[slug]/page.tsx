@@ -60,7 +60,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       />
 
       <div className="max-w-2xl">
-        <SectionHeader eyebrow={post.tag} title={post.title} />
+        <SectionHeader as="h1" eyebrow={post.tag} title={post.title} />
         <p className="mt-2 text-sm text-ink/50">
           {formatLongDate(new Date(post.publishedDate))} · {post.readTimeMinutes} min read
         </p>

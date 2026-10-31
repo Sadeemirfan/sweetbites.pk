@@ -201,6 +201,7 @@ export default async function FaqPage({ params }: { params: Promise<Params> }) {
 
         <div className="max-w-3xl">
           <SectionHeader
+            as="h1"
             eyebrow="Questions"
             title="Things people ask before ordering"
             lead="If your question isn't here, message us - we answer during shop hours."

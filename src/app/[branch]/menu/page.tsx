@@ -60,6 +60,7 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Menu" }]} />
 
       <SectionHeader
+        as="h1"
         eyebrow="Menu"
         title="Prices"
         lead="The gallery is for browsing what we make - this is where the actual, current prices live."

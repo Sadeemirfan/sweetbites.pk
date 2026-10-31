@@ -73,6 +73,7 @@ export default async function CategoryPage({ params }: PageProps) {
         />
 
         <SectionHeader
+          as="h1"
           eyebrow={`${products.length} ${products.length === 1 ? "cake" : "cakes"}`}
           title={category.name}
           lead={category.description ?? undefined}
