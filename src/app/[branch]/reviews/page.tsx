@@ -10,6 +10,8 @@ import { CountUp } from "@/components/motion/CountUp";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { getApprovedReviews, getReviewAggregate } from "@/lib/supabase/queries";
 
+export const dynamic = "force-dynamic";
+
 type Params = { branch: string };
 
 export async function generateMetadata({

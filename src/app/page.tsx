@@ -7,7 +7,8 @@ import { Faq } from "@/components/ui/Faq";
 import { BRANCHES, BRANCH_INFO } from "@/lib/branches";
 import { getApprovedReviews } from "@/lib/supabase/queries";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
-import type { ReviewRow } from "@/types/catalogue";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sweet Bites - Choose Your City",
@@ -76,18 +77,13 @@ const FAQ_ITEMS = [
 ];
 
 export default async function CitySelectorPage() {
-  let reviews: { branch: (typeof BRANCHES)[number]; review: ReviewRow }[] = [];
-  try {
-    const branchReviews = await Promise.all(
-      BRANCHES.map(async (branch) => {
-        const [review] = await getApprovedReviews(branch, 1);
-        return review ? { branch, review } : null;
-      })
-    );
-    reviews = branchReviews.filter((entry): entry is NonNullable<typeof entry> => entry !== null);
-  } catch {
-    reviews = [];
-  }
+  const branchReviews = await Promise.all(
+    BRANCHES.map(async (branch) => {
+      const [review] = await getApprovedReviews(branch, 1);
+      return review ? { branch, review } : null;
+    })
+  );
+  const reviews = branchReviews.filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
   return (
     <main className="flex flex-col bg-cream-50">
@@ -177,5 +173,3 @@ export default async function CitySelectorPage() {
     </main>
   );
 }
-
-export const dynamic = "force-static";

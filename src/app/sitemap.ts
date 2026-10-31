@@ -4,6 +4,8 @@ import { BRANCHES } from "@/lib/branches";
 import { BLOG_POSTS } from "@/lib/blog";
 import { getCategoriesWithCounts, getAllProductPaths } from "@/lib/supabase/queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const root = [
     {

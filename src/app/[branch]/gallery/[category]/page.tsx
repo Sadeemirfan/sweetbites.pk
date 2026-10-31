@@ -9,6 +9,8 @@ import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { getCategoryBySlug, getProductsByCategory } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = { params: Promise<{ branch: string; category: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

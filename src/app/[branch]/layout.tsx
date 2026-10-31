@@ -2,12 +2,8 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
-import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
+import { getBranchInfo, isBranch } from "@/lib/branches";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
-
-export function generateStaticParams() {
-  return BRANCHES.map((branch) => ({ branch }));
-}
 
 export default async function BranchLayout({
   children,

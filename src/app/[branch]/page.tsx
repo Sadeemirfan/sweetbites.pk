@@ -10,6 +10,8 @@ import { bakerySchema } from "@/lib/seo/jsonld";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 type Params = { branch: string };
 
 export async function generateMetadata({

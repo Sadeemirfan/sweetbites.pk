@@ -4,8 +4,12 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 

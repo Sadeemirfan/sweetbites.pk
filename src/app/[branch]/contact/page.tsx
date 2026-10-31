@@ -6,8 +6,12 @@ import { Section, SectionHeader } from "@/components/ui/Section";
 import { MapEmbed } from "@/components/sections/LocationHours";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bakerySchema } from "@/lib/seo/jsonld";
-import { getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -58,10 +62,10 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
             <dl className="flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-rosewood">WhatsApp &amp; calls</dt>
-                <dd className="text-lg text-ink">
+                <dd>
                   <a
                     href={`tel:${branchInfo.phoneE164}`}
-                    className="underline-offset-4 hover:text-rosewood hover:underline"
+                    className="text-lg text-ink underline-offset-4 hover:text-rosewood hover:underline"
                   >
                     {branchInfo.phoneDisplay}
                   </a>
@@ -70,7 +74,7 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
 
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-rosewood">Address</dt>
-                <dd className="max-w-sm text-base text-ink/80">
+                <dd className="text-base text-ink/80">
                   {branchInfo.street}, {branchInfo.city}, {branchInfo.region}
                 </dd>
               </div>
@@ -82,15 +86,15 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
 
               {socials.length ? (
                 <div className="flex flex-col gap-2">
-                  <dt className="eyebrow text-rosewood">Follow us</dt>
-                  <dd className="flex flex-wrap gap-2">
+                  <dt className="eyebrow text-rosewood">Social profiles</dt>
+                  <dd className="flex flex-wrap gap-x-4 gap-y-2">
                     {socials.map((social) => (
                       <a
                         key={social.key}
                         href={branchInfo.socials[social.key]}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-11 items-center rounded-md border border-cream-200 px-4 text-sm text-ink transition-colors hover:border-rosewood hover:text-rosewood"
+                        className="text-sm text-ink/75 underline-offset-4 hover:text-rosewood hover:underline"
                       >
                         {social.label}
                       </a>
@@ -117,16 +121,18 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="overflow-hidden rounded-lg border border-cream-200">
             {branchInfo.mapEmbedSrc ? (
-              <div className="overflow-hidden rounded-lg border border-cream-200">
-                <MapEmbed
-                  src={branchInfo.mapEmbedSrc}
-                  title={`Map showing ${branchInfo.name}`}
-                  className="h-72 w-full border-0"
-                />
+              <MapEmbed
+                src={branchInfo.mapEmbedSrc}
+                title={`Map showing ${branchInfo.name}`}
+                className="h-72 w-full border-0 lg:h-full lg:min-h-[22rem]"
+              />
+            ) : (
+              <div className="flex h-72 w-full items-center justify-center bg-cream-100 text-sm text-ink/60 lg:h-full lg:min-h-[22rem]">
+                Map coming soon
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </Section>

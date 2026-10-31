@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type PaymentAccount = { number?: string; name?: string };
 export type BankAccount = {
@@ -21,7 +21,7 @@ export type PaymentDetails = {
  * so nothing here is hardcoded.
  */
 export async function getSettings(): Promise<Record<string, unknown>> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase.from("site_settings").select("key, value");
 
   return Object.fromEntries((data ?? []).map((row) => [row.key, row.value]));

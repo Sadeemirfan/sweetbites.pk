@@ -6,8 +6,12 @@ import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Faq } from "@/components/ui/Faq";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 

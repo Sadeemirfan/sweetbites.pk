@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Branch } from "@/lib/branches";
 import type {
   CategoryRow,
@@ -11,10 +11,11 @@ import type {
 
 /**
  * Read paths for the public catalogue. Everything here runs under the
- * anonymous RLS policies from Phase 2, so inactive categories/products
- * and unapproved reviews are filtered out by the database rather than by
- * these queries - the explicit `.eq("is_active", true)` calls are belt
- * and braces, and keep the intent readable at the call site.
+ * anonymous RLS policies from Phase 2 via the cookie-less public client,
+ * so inactive categories/products and unapproved reviews are filtered out
+ * by the database rather than by these queries - the explicit
+ * `.eq("is_active", true)` calls are belt and braces, and keep the intent
+ * readable at the call site.
  *
  * Every function also takes a `branch` - Arifwala, Lahore, and Pattoki
  * share these tables, each row tagged by which branch it belongs to.
@@ -64,7 +65,7 @@ function toProduct(row: ProductRowWithCategory): Product {
 const PRODUCT_SELECT = "*, categories!inner(id, name, slug)";
 
 export async function getCategoriesWithCounts(branch: Branch): Promise<CategoryWithCount[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("categories")
     .select("*, products(count)")
@@ -84,7 +85,7 @@ export async function getCategoriesWithCounts(branch: Branch): Promise<CategoryW
 }
 
 export async function getCategoryBySlug(branch: Branch, slug: string): Promise<CategoryRow | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("categories")
     .select("*")
@@ -97,7 +98,7 @@ export async function getCategoryBySlug(branch: Branch, slug: string): Promise<C
 }
 
 export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
@@ -112,7 +113,7 @@ export async function getProductsByCategory(categoryId: string): Promise<Product
 
 /** Every active product for a branch, across all categories - the flat gallery grid. */
 export async function getAllProducts(branch: Branch): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
@@ -126,7 +127,7 @@ export async function getAllProducts(branch: Branch): Promise<Product[]> {
 }
 
 export async function getFeaturedProducts(branch: Branch, limit = 6): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
@@ -149,7 +150,7 @@ export async function getProductBySlug(
   categorySlug: string,
   productSlug: string
 ): Promise<Product | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
     .select(PRODUCT_SELECT)
@@ -166,7 +167,7 @@ export async function getProductBySlug(
 export async function getAllProductPaths(
   branch: Branch
 ): Promise<{ categorySlug: string; productSlug: string; updatedAt: string }[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
     .select("slug, created_at, categories!inner(slug)")
@@ -185,7 +186,7 @@ export async function getAllProductPaths(
 }
 
 export async function getApprovedReviews(branch: Branch, limit?: number): Promise<ReviewRow[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   let query = supabase
     .from("reviews")
     .select("*")
@@ -216,7 +217,7 @@ export async function getReviewAggregate(
 }
 
 export async function getDeliveryAreas(branch: Branch) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("delivery_areas")
     .select("*")

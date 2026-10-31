@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Prose } from "@/components/ui/Prose";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
 import { BLOG_POSTS, getBlogPost, renderBlogText } from "@/lib/blog";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 import { formatLongDate } from "@/lib/utils/format";
@@ -88,5 +88,5 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 }
 
 export function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+  return BRANCHES.flatMap((branch) => BLOG_POSTS.map((post) => ({ branch, slug: post.slug })));
 }
