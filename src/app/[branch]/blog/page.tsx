@@ -22,10 +22,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Cake Guides & Stories | ${branchInfo.name}`;
+  const description = `Guides on choosing birthday and wedding cakes in ${branchInfo.city}, flavours, and care tips from ${branchInfo.name}.`;
+
   return {
-    title: `Cake Guides & Stories | ${branchInfo.name}`,
-    description: `Guides on choosing birthday and wedding cakes in ${branchInfo.city}, flavours, and care tips from ${branchInfo.name}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/blog` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/blog`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

@@ -21,12 +21,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!category) return { title: `Category not found | ${branchInfo.shortName}` };
 
+  const title = `${category.name} in ${branchInfo.city} | ${branchInfo.shortName}`;
+  const description =
+    category.description ??
+    `${category.name} made to order in ${branchInfo.city}, ${branchInfo.region}. Homemade, baked fresh after you order - message us on WhatsApp for prices.`;
+
   return {
-    title: `${category.name} in ${branchInfo.city} | ${branchInfo.shortName}`,
-    description:
-      category.description ??
-      `${category.name} made to order in ${branchInfo.city}, ${branchInfo.region}. Homemade, baked fresh after you order - message us on WhatsApp for prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery/${category.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/gallery/${category.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

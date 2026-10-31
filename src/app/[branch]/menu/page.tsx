@@ -21,10 +21,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Menu & Prices | ${branchInfo.name}`;
+  const description = `The current ${branchInfo.name} price list - every cake, dessert, and price.`;
+
   return {
-    title: `Menu & Prices | ${branchInfo.name}`,
-    description: `The current ${branchInfo.name} price list - every cake, dessert, and price.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/menu` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/menu`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

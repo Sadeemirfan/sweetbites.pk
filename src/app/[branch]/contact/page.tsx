@@ -31,10 +31,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Contact & Location | ${branchInfo.name}`;
+  const description = `${branchInfo.name} - ${branchInfo.street}. ${branchInfo.hoursDisplay}. Order on WhatsApp: ${branchInfo.phoneDisplay}.`;
+
   return {
-    title: `Contact & Location | ${branchInfo.name}`,
-    description: `${branchInfo.name} - ${branchInfo.street}. ${branchInfo.hoursDisplay}. Order on WhatsApp: ${branchInfo.phoneDisplay}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/contact` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/contact`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

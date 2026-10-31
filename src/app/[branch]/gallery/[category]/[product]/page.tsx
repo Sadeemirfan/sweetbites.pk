@@ -23,15 +23,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!product) return { title: `Cake not found | ${branchInfo.shortName}` };
 
+  const title = `${product.name} in ${branchInfo.city} | ${branchInfo.shortName}`;
+  const description =
+    product.description ??
+    `${product.name}, made to order in ${branchInfo.city}. See sizes, flavours and prices.`;
+
   return {
-    title: `${product.name} in ${branchInfo.city} | ${branchInfo.shortName}`,
-    description:
-      product.description ??
-      `${product.name}, made to order in ${branchInfo.city}. See sizes, flavours and prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery/${categorySlug}/${product.slug}` },
     openGraph: {
       title: `${product.name} | ${branchInfo.name}`,
-      description: product.description ?? undefined,
+      description,
+      url: `/${branch}/gallery/${categorySlug}/${product.slug}`,
+      images: product.image_url ? [product.image_url] : undefined,
+    },
+    twitter: {
+      card: product.image_url ? "summary_large_image" : "summary",
+      title: `${product.name} | ${branchInfo.name}`,
+      description,
       images: product.image_url ? [product.image_url] : undefined,
     },
   };

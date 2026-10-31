@@ -156,10 +156,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Cake Ordering FAQ | ${branchInfo.name}`;
+  const description = `Lead time, delivery charges, payment methods, and how to store your cake - the questions we're asked most at ${branchInfo.name}.`;
+
   return {
-    title: `Cake Ordering FAQ | ${branchInfo.name}`,
-    description: `Lead time, delivery charges, payment methods, and how to store your cake - the questions we're asked most at ${branchInfo.name}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/faq` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/faq`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

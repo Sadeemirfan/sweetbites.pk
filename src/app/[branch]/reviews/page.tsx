@@ -23,10 +23,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Customer Reviews | ${branchInfo.name}`;
+  const description = `Real reviews from ${branchInfo.name} customers - birthday cakes, wedding cakes, and custom orders. Leave your own review.`;
+
   return {
-    title: `Customer Reviews | ${branchInfo.name}`,
-    description: `Real reviews from ${branchInfo.name} customers - birthday cakes, wedding cakes, and custom orders. Leave your own review.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/reviews` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/reviews`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

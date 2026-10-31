@@ -22,10 +22,23 @@ export async function generateMetadata({
   const post = getBlogPost(slug);
   if (!post) return { title: `Blog | ${branchInfo.name}` };
 
+  const title = `${post.title} | ${branchInfo.name}`;
+  const description = renderBlogText(post.excerpt, branchInfo.city);
+
   return {
-    title: `${post.title} | ${branchInfo.name}`,
-    description: renderBlogText(post.excerpt, branchInfo.city),
+    title,
+    description,
     alternates: { canonical: `/${branch}/blog/${slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/blog/${slug}`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

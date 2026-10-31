@@ -24,10 +24,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Homemade Cakes in ${branchInfo.city} - Custom & Birthday Cake Gallery | ${branchInfo.shortName}`;
+  const description = `Browse every homemade cake ${branchInfo.name} makes - birthday, wedding, and custom theme cakes. Message us on WhatsApp for current prices.`;
+
   return {
-    title: `Homemade Cakes in ${branchInfo.city} - Custom & Birthday Cake Gallery | ${branchInfo.shortName}`,
-    description: `Browse every homemade cake ${branchInfo.name} makes - birthday, wedding, and custom theme cakes. Message us on WhatsApp for current prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/gallery`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
