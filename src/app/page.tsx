@@ -11,8 +11,9 @@ import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Sweet Bites - Choose Your City",
-  description: "Sweet Bites has homemade cake studios in Arifwala, Lahore, and Pattoki. Choose your city to see the menu and order on WhatsApp.",
+  title: "Custom Cakes in Lahore, Arifwala & Pattoki | Sweet Bites",
+  description:
+    "Homemade, made-to-order cakes in Lahore, Arifwala and Pattoki. No preservatives, open 7 days, delivery across each city. Order on WhatsApp.",
   alternates: { canonical: "/" },
 };
 
@@ -92,9 +93,9 @@ export default async function CitySelectorPage() {
 
         <div className="flex flex-col items-center gap-2 text-center">
           <span className="eyebrow text-rosewood">Sweet Bites</span>
-          <h1 className="text-2xl text-ink md:text-3xl">Which city are you in?</h1>
+          <h1 className="text-2xl text-ink md:text-3xl">Homemade Custom Cakes in Punjab</h1>
           <p className="max-w-sm text-base text-ink/70">
-            Pick your branch to see its menu, prices, and order on WhatsApp.
+            Pick your branch to see its menu and order on WhatsApp.
           </p>
         </div>
 
@@ -117,10 +118,20 @@ export default async function CitySelectorPage() {
 
       <Section tone="cream-alt">
         <SectionHeader
-          eyebrow="Why Sweet Bites"
+          eyebrow="About Sweet Bites"
           title="A home kitchen, not a bakery counter"
           lead="Every branch is a small kitchen, not a factory line. Everything below is a consequence of that, not a marketing line."
         />
+
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-ink/70">
+          Sweet Bites makes custom cakes in Arifwala, Lahore, and Pattoki. Every cake is started
+          after you order it, which means nothing sits pre-made on a shelf waiting. Because we use
+          real cream and real butter with no preservatives, cakes are best eaten within two days of
+          delivery. We are open 8:00 AM to 10:00 PM all seven days of the week. Standard cakes need
+          at least two days&apos; notice; custom, theme, and tiered cakes need three. Each branch
+          delivers within its own city, and pickup from the kitchen is always free. All orders are
+          placed and confirmed on WhatsApp before any money changes hands.
+        </p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
           {WHY_POINTS.map((point) => (
@@ -148,7 +159,7 @@ export default async function CitySelectorPage() {
                   href={`/${branch}/reviews`}
                   className="text-sm text-rosewood underline-offset-4 hover:underline"
                 >
-                  More from {BRANCH_INFO[branch].city} →
+                  More from {BRANCH_INFO[branch].city} &rarr;
                 </Link>
               </div>
             ))}
@@ -165,9 +176,17 @@ export default async function CitySelectorPage() {
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 border-t border-cream-200 px-4 py-8 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between md:px-6">
         <p>© {new Date().getFullYear()} Sweet Bites. All rights reserved.</p>
-        <Link href="/arifwala/policies/privacy" className="hover:text-rosewood">
-          Privacy Policy
-        </Link>
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {BRANCHES.map((branch) => (
+            <Link
+              key={branch}
+              href={`/${branch}/policies/privacy`}
+              className="hover:text-rosewood"
+            >
+              Privacy Policy ({BRANCH_INFO[branch].city})
+            </Link>
+          ))}
+        </div>
       </div>
       <GoogleAnalytics />
     </main>
