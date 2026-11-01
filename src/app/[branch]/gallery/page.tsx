@@ -23,6 +23,8 @@ export async function generateMetadata({
   const { branch } = await params;
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
+  const products = await getAllProducts(branch);
+  const hasProducts = products.length > 0;
 
   const title = `Homemade Cakes in ${branchInfo.city} - Custom & Birthday Cake Gallery | ${branchInfo.shortName}`;
   const description = `Browse every homemade cake ${branchInfo.name} makes - birthday, wedding, and custom theme cakes. Message us on WhatsApp for current prices.`;
@@ -31,6 +33,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `/${branch}/gallery` },
+    ...(!hasProducts ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,

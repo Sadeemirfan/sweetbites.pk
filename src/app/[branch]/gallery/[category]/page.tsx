@@ -21,6 +21,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!category) return { title: `Category not found | ${branchInfo.shortName}` };
 
+  const products = await getProductsByCategory(category.id);
+  const hasProducts = products.length > 0;
+
   const title = `${category.name} in ${branchInfo.city} | ${branchInfo.shortName}`;
   const description =
     category.description ??
@@ -30,6 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/${branch}/gallery/${category.slug}` },
+    ...(!hasProducts ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,

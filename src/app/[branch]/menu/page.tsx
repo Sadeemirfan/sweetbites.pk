@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getSettings } from "@/lib/settings";
+import { getBranchMenuImageUrl } from "@/lib/settings";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
@@ -20,6 +20,8 @@ export async function generateMetadata({
   const { branch } = await params;
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
+  const menuImageUrl = await getBranchMenuImageUrl(branch);
+  const hasMenuImage = Boolean(menuImageUrl);
 
   const title = `Menu & Prices | ${branchInfo.name}`;
   const description = `The current ${branchInfo.name} price list - every cake, dessert, and price.`;
@@ -28,6 +30,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `/${branch}/menu` },
+    ...(!hasMenuImage ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,
@@ -45,15 +48,7 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
   const { branch } = await params;
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
-
-  // Arifwala's admin can upload a new menu photo any time it changes
-  // (site_settings). Lahore and Pattoki have no admin dashboard, so
-  // theirs is plain config - see the note in branches.ts.
-  let menuImageUrl = branchInfo.menuImageUrl;
-  if (branch === "arifwala") {
-    const settings = await getSettings();
-    menuImageUrl = typeof settings.menu_image_url === "string" ? settings.menu_image_url : null;
-  }
+  const menuImageUrl = await getBranchMenuImageUrl(branch);
 
   return (
     <Section tone="cream">

@@ -3,25 +3,35 @@ import { SITE_URL } from "@/lib/constants";
 import { BRANCHES } from "@/lib/branches";
 import { BLOG_POSTS } from "@/lib/blog";
 import { getCategoriesWithCounts, getAllProductPaths } from "@/lib/supabase/queries";
+import { getBranchMenuImageUrl } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const root = [
+  const root: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      changeFrequency: "weekly",
       priority: 1,
     },
   ];
 
   const perBranch = await Promise.all(
     BRANCHES.map(async (branch) => {
-      const staticRoutes = [
+      // Categories, products and menu are database-driven
+      const [categories, products, menuImageUrl] = await Promise.all([
+        getCategoriesWithCounts(branch),
+        getAllProductPaths(branch),
+        getBranchMenuImageUrl(branch),
+      ]);
+
+      const hasProducts = products.length > 0;
+      const hasMenu = Boolean(menuImageUrl);
+
+      const staticRouteDefs: { path: string; priority: number }[] = [
         { path: "", priority: 0.9 },
-        { path: "/gallery", priority: 0.9 },
-        { path: "/menu", priority: 0.8 },
+        ...(hasProducts ? [{ path: "/gallery", priority: 0.9 }] : []),
+        ...(hasMenu ? [{ path: "/menu", priority: 0.8 }] : []),
         { path: "/reviews", priority: 0.7 },
         { path: "/about", priority: 0.6 },
         { path: "/contact", priority: 0.7 },
@@ -30,42 +40,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { path: "/policies/order", priority: 0.3 },
         { path: "/policies/delivery", priority: 0.3 },
         { path: "/policies/privacy", priority: 0.2 },
-      ].map((route) => ({
+      ];
+
+      const staticRoutes: MetadataRoute.Sitemap = staticRouteDefs.map((route) => ({
         url: `${SITE_URL}/${branch}${route.path}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly" as const,
+        changeFrequency: "weekly",
         priority: route.priority,
       }));
 
-      const blogRoutes = BLOG_POSTS.map((post) => ({
+      const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
         url: `${SITE_URL}/${branch}/blog/${post.slug}`,
         lastModified: new Date(post.publishedDate),
-        changeFrequency: "monthly" as const,
+        changeFrequency: "monthly",
         priority: 0.4,
       }));
 
-      // Categories and products are database-driven, so the sitemap grows
-      // when the admin adds them - no code change, same as the gallery.
-      const [categories, products] = await Promise.all([
-        getCategoriesWithCounts(branch),
-        getAllProductPaths(branch),
-      ]);
+      // Only categories with at least 1 active product
+      const activeCategories = hasProducts
+        ? categories.filter((category) => category.productCount > 0)
+        : [];
+
+      const categoryRoutes: MetadataRoute.Sitemap = activeCategories.map((category) => ({
+        url: `${SITE_URL}/${branch}/gallery/${category.slug}`,
+        lastModified: new Date(category.updated_at ?? category.created_at),
+        changeFrequency: "weekly",
+        priority: 0.8,
+      }));
+
+      const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
+        url: `${SITE_URL}/${branch}/gallery/${product.categorySlug}/${product.productSlug}`,
+        lastModified: new Date(product.updatedAt),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      }));
 
       return [
         ...staticRoutes,
         ...blogRoutes,
-        ...categories.map((category) => ({
-          url: `${SITE_URL}/${branch}/gallery/${category.slug}`,
-          lastModified: new Date(category.created_at),
-          changeFrequency: "weekly" as const,
-          priority: 0.8,
-        })),
-        ...products.map((product) => ({
-          url: `${SITE_URL}/${branch}/gallery/${product.categorySlug}/${product.productSlug}`,
-          lastModified: new Date(product.updatedAt),
-          changeFrequency: "weekly" as const,
-          priority: 0.7,
-        })),
+        ...categoryRoutes,
+        ...productRoutes,
       ];
     })
   );

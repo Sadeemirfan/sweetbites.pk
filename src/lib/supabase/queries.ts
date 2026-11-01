@@ -168,20 +168,35 @@ export async function getAllProductPaths(
   branch: Branch
 ): Promise<{ categorySlug: string; productSlug: string; updatedAt: string }[]> {
   const supabase = createPublicClient();
-  const { data } = await supabase
+  type Row = {
+    slug: string;
+    created_at: string;
+    updated_at?: string | null;
+    categories: { slug: string };
+  };
+
+  const { data, error } = await supabase
     .from("products")
-    .select("slug, created_at, categories!inner(slug)")
+    .select("slug, created_at, updated_at, categories!inner(slug)")
     .eq("branch", branch)
     .eq("is_active", true);
 
+  let rows = data as Row[] | null;
+  if (error) {
+    const fallback = await supabase
+      .from("products")
+      .select("slug, created_at, categories!inner(slug)")
+      .eq("branch", branch)
+      .eq("is_active", true);
+    rows = fallback.data as Row[] | null;
+  }
+
   return (
-    (data as { slug: string; created_at: string; categories: { slug: string } }[] | null)?.map(
-      (row) => ({
-        categorySlug: row.categories.slug,
-        productSlug: row.slug,
-        updatedAt: row.created_at,
-      })
-    ) ?? []
+    rows?.map((row) => ({
+      categorySlug: row.categories.slug,
+      productSlug: row.slug,
+      updatedAt: row.updated_at ?? row.created_at,
+    })) ?? []
   );
 }
 
