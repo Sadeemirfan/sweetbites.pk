@@ -13,6 +13,7 @@ import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
 export const dynamic = "force-dynamic";
 
+
 type Params = { branch: string };
 
 export async function generateMetadata({

@@ -80,8 +80,12 @@ const FAQ_ITEMS = [
 export default async function CitySelectorPage() {
   const branchReviews = await Promise.all(
     BRANCHES.map(async (branch) => {
-      const [review] = await getApprovedReviews(branch, 1);
-      return review ? { branch, review } : null;
+      try {
+        const [review] = await getApprovedReviews(branch, 1);
+        return review ? { branch, review } : null;
+      } catch {
+        return null;
+      }
     })
   );
   const reviews = branchReviews.filter((entry): entry is NonNullable<typeof entry> => entry !== null);
