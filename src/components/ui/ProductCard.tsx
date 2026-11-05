@@ -18,10 +18,12 @@ export function ProductCard({
   product,
   categorySlug,
   branchInfo,
+  priority = false,
 }: {
   product: Product;
   categorySlug: string;
   branchInfo: BranchInfo;
+  priority?: boolean;
 }) {
   const href = `/${branchInfo.slug}/gallery/${categorySlug}/${product.slug}`;
   const firstSize = product.sizes[0];
@@ -45,6 +47,7 @@ export function ProductCard({
               src={product.image_url}
               alt={product.name}
               fill
+              priority={priority}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               // §14 - image scale 1.04 on hover.
               className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
