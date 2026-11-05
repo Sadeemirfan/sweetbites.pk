@@ -42,6 +42,13 @@ export function Hero({ branchInfo }: { branchInfo: BranchInfo }) {
             href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
             fillClassName="bg-[#04301A]/15"
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "hero",
+              },
+            }}
             className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-whatsapp px-6 text-base font-medium text-[#04301A] sm:w-auto"
           >
             <WhatsAppIcon />

@@ -217,6 +217,13 @@ export default async function FaqPage({ params }: { params: Promise<Params> }) {
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "faq",
+                },
+              }}
             >
               <WhatsAppIcon />
               Ask on WhatsApp

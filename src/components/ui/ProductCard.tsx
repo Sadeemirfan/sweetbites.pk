@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { WhatsAppIcon } from "@/components/ui/Button";
 import { TiltCard } from "@/components/motion/TiltCard";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { productWhatsappLink } from "@/lib/utils/whatsapp";
 import type { BranchInfo } from "@/lib/branches";
 import type { Product } from "@/types/catalogue";
@@ -69,15 +70,23 @@ export function ProductCard({
               claim an accuracy the photo can't back up. See the Menu
               page for real, current prices. */}
           <div className="mt-auto flex items-center justify-end gap-3 pt-3">
-            <a
+            <TrackedLink
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Order ${product.name} on WhatsApp`}
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "product_card",
+                  product: product.name,
+                },
+              }}
               className="relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-md bg-whatsapp text-[#04301A] transition-colors hover:bg-whatsapp/90"
             >
               <WhatsAppIcon />
-            </a>
+            </TrackedLink>
           </div>
         </div>
       </article>

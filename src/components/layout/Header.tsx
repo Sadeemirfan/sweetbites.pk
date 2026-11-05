@@ -50,6 +50,8 @@ export function Header({ branchInfo }: { branchInfo: BranchInfo }) {
           <WhatsAppCta
             whatsappNumber={branchInfo.whatsappNumber}
             message={waMessage}
+            branch={branchInfo.slug}
+            location="header"
             className="hidden lg:inline-flex"
           />
 
@@ -109,6 +111,8 @@ export function Header({ branchInfo }: { branchInfo: BranchInfo }) {
         <WhatsAppCta
           whatsappNumber={branchInfo.whatsappNumber}
           message={waMessage}
+          branch={branchInfo.slug}
+          location="header_drawer"
           className="mt-6 flex w-full"
         />
       </div>

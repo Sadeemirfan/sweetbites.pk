@@ -90,6 +90,13 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             variant="whatsapp"
             href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "blog_post",
+              },
+            }}
           >
             <WhatsAppIcon />
             Ask us on WhatsApp

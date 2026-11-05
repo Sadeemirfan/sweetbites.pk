@@ -1,5 +1,6 @@
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { SectionHeader } from "@/components/ui/Section";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import type { BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
@@ -55,12 +56,20 @@ export function LocationHours({ branchInfo }: { branchInfo: BranchInfo }) {
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-cream-200">WhatsApp &amp; calls</dt>
                 <dd>
-                  <a
+                  <TrackedLink
                     href={`tel:${branchInfo.phoneE164}`}
+                    trackEvent={{
+                      name: "phone_click",
+                      params: {
+                        branch: branchInfo.slug,
+                        phone_number: branchInfo.phoneE164,
+                        location: "location_hours",
+                      },
+                    }}
                     className="text-cream-100 underline-offset-4 hover:text-ghee hover:underline"
                   >
                     {branchInfo.phoneDisplay}
-                  </a>
+                  </TrackedLink>
                 </dd>
               </div>
             </dl>
@@ -70,12 +79,30 @@ export function LocationHours({ branchInfo }: { branchInfo: BranchInfo }) {
                 variant="whatsapp"
                 href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
                 external
+                trackEvent={{
+                  name: "whatsapp_click",
+                  params: {
+                    branch: branchInfo.slug,
+                    location: "location_hours",
+                  },
+                }}
               >
                 <WhatsAppIcon />
                 Order on WhatsApp
               </ButtonLink>
               {mapsLink ? (
-                <ButtonLink variant="outline-dark" href={mapsLink} external>
+                <ButtonLink
+                  variant="outline-dark"
+                  href={mapsLink}
+                  external
+                  trackEvent={{
+                    name: "directions_click",
+                    params: {
+                      branch: branchInfo.slug,
+                      location: "location_hours",
+                    },
+                  }}
+                >
                   Get directions
                 </ButtonLink>
               ) : null}

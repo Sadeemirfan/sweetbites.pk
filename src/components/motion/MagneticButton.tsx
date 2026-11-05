@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { usePrefersReducedMotion } from "@/lib/hooks/useMotion";
 import { cn } from "@/lib/utils/cn";
+import { trackEvent, type TrackEventConfig } from "@/lib/analytics";
 
 /**
  * §14 - magnetic pull within 40px, fill wipe from the left.
@@ -30,6 +31,8 @@ export function MagneticLink({
   children,
   className,
   fillClassName = "bg-cream-50/15",
+  trackEvent: eventConfig,
+  onClick,
 }: {
   href: string;
   external?: boolean;
@@ -37,6 +40,8 @@ export function MagneticLink({
   className?: string;
   /** The wipe colour - lighter over dark buttons, darker over light. */
   fillClassName?: string;
+  trackEvent?: TrackEventConfig;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }) {
   const reducedMotion = usePrefersReducedMotion();
   const ref = useRef<HTMLAnchorElement>(null);
@@ -94,6 +99,12 @@ export function MagneticLink({
         if (event.pointerType === "mouse") setHovered(true);
       }}
       onPointerLeave={reset}
+      onClick={(e) => {
+        if (eventConfig) {
+          trackEvent(eventConfig.name, eventConfig.params);
+        }
+        onClick?.(e);
+      }}
       className={cn("relative isolate overflow-hidden", className)}
     >
       {!reducedMotion ? (

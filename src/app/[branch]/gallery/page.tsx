@@ -13,7 +13,6 @@ import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
 export const dynamic = "force-dynamic";
 
-
 type Params = { branch: string };
 
 export async function generateMetadata({
@@ -101,6 +100,13 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "gallery",
+                },
+              }}
             >
               <WhatsAppIcon />
               Order on WhatsApp

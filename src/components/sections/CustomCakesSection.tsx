@@ -21,6 +21,13 @@ export function CustomCakesSection({ branchInfo }: { branchInfo: BranchInfo }) {
             variant="whatsapp"
             href={whatsappLink(branchInfo.whatsappNumber, message)}
             external
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "custom_cakes_section",
+              },
+            }}
           >
             <WhatsAppIcon />
             Ask about a custom cake

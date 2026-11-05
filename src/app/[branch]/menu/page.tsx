@@ -54,25 +54,22 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
     <Section tone="cream">
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Menu" }]} />
 
-      <SectionHeader
-        as="h1"
-        eyebrow="Menu"
-        title="Prices"
-        lead="The gallery is for browsing what we make - this is where the actual, current prices live."
-      />
+      <div className="max-w-3xl">
+        <SectionHeader
+          as="h1"
+          eyebrow="Price list"
+          title={`The ${branchInfo.city} menu`}
+          lead="Every cake, dessert, and current price. We update this whenever recipes or prices change."
+        />
 
-      <div className="mt-8 max-w-2xl">
         {menuImageUrl ? (
-          <div className="overflow-hidden rounded-lg border border-cream-200 shadow-cream">
-            {/*
-              A plain <img>, not next/image - the owner re-uploads this
-              whenever prices change, so its real dimensions aren't known
-              ahead of time. next/image needs a fixed width/height to
-              reserve layout space, which would distort or crop a photo
-              whose actual aspect ratio doesn't match.
-            */}
+          <div className="mt-8 overflow-hidden rounded-lg border border-cream-200 bg-cream-100 shadow-cream">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={menuImageUrl} alt={`${branchInfo.name} price list`} className="h-auto w-full" />
+            <img
+              src={menuImageUrl}
+              alt={`${branchInfo.name} menu`}
+              className="w-full object-contain"
+            />
           </div>
         ) : (
           <EmptyState
@@ -87,6 +84,13 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
             variant="whatsapp"
             href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "menu",
+              },
+            }}
           >
             <WhatsAppIcon />
             Order on WhatsApp

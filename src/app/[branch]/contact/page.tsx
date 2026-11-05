@@ -5,6 +5,7 @@ import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { MapEmbed } from "@/components/sections/LocationHours";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { bakerySchema } from "@/lib/seo/jsonld";
 import { BRANCHES, getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
@@ -76,12 +77,20 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-rosewood">WhatsApp &amp; calls</dt>
                 <dd>
-                  <a
+                  <TrackedLink
                     href={`tel:${branchInfo.phoneE164}`}
+                    trackEvent={{
+                      name: "phone_click",
+                      params: {
+                        branch: branchInfo.slug,
+                        phone_number: branchInfo.phoneE164,
+                        location: "contact",
+                      },
+                    }}
                     className="text-lg text-ink underline-offset-4 hover:text-rosewood hover:underline"
                   >
                     {branchInfo.phoneDisplay}
-                  </a>
+                  </TrackedLink>
                 </dd>
               </div>
 
@@ -122,12 +131,30 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
                 variant="whatsapp"
                 href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
                 external
+                trackEvent={{
+                  name: "whatsapp_click",
+                  params: {
+                    branch: branchInfo.slug,
+                    location: "contact",
+                  },
+                }}
               >
                 <WhatsAppIcon />
                 Order on WhatsApp
               </ButtonLink>
               {mapsLink ? (
-                <ButtonLink variant="outline" href={mapsLink} external>
+                <ButtonLink
+                  variant="outline"
+                  href={mapsLink}
+                  external
+                  trackEvent={{
+                    name: "directions_click",
+                    params: {
+                      branch: branchInfo.slug,
+                      location: "contact",
+                    },
+                  }}
+                >
                   Get directions
                 </ButtonLink>
               ) : null}

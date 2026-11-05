@@ -80,6 +80,13 @@ export default async function AboutPage({ params }: { params: Promise<Params> })
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "about",
+                },
+              }}
             >
               <WhatsAppIcon />
               Talk to us on WhatsApp
