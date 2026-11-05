@@ -1,13 +1,13 @@
 import { SITE_URL } from "@/lib/constants";
 import type { BranchInfo } from "@/lib/branches";
-import type { Product, ReviewRow } from "@/types/catalogue";
+import type { Product } from "@/types/catalogue";
 
-/** PLAN.md §15 - Bakery with geo, hours, telephone, and all four sameAs. */
-export function bakerySchema(
-  branchInfo: BranchInfo,
-  aggregate?: { count: number; average: number } | null,
-  reviews?: ReviewRow[]
-) {
+/**
+ * PLAN.md §15 - Bakery with geo, hours, telephone, sameAs, and hasMap.
+ * Note: aggregateRating and review markup are omitted for LocalBusiness
+ * rich results to comply with Google guidelines against self-serving reviews.
+ */
+export function bakerySchema(branchInfo: BranchInfo) {
   const branchUrl = `${SITE_URL}/${branchInfo.slug}`;
 
   return {
@@ -37,6 +37,11 @@ export function bakerySchema(
           },
         }
       : {}),
+    ...(branchInfo.mapEmbedSrc
+      ? {
+          hasMap: branchInfo.mapEmbedSrc,
+        }
+      : {}),
     areaServed: { "@type": "City", name: branchInfo.city },
     openingHoursSpecification: [
       {
@@ -57,35 +62,6 @@ export function bakerySchema(
     // Every profile the business actually owns - this is what ties the
     // site to its social presence for Google (§15).
     sameAs: Object.values(branchInfo.socials).filter(Boolean),
-    ...(aggregate
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: aggregate.average,
-            reviewCount: aggregate.count,
-            bestRating: 5,
-            worstRating: 1,
-          },
-        }
-      : {}),
-    ...(reviews?.length
-      ? {
-          review: reviews
-            .filter((review) => typeof review.rating === "number" && review.body)
-            .map((review) => ({
-              "@type": "Review",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: review.rating,
-                bestRating: 5,
-                worstRating: 1,
-              },
-              author: { "@type": "Person", name: review.customer_name?.trim() || "Sweet Bites customer" },
-              reviewBody: review.body,
-              datePublished: review.created_at,
-            })),
-        }
-      : {}),
   };
 }
 

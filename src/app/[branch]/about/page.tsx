@@ -4,8 +4,12 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -18,10 +22,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `About Our Home Kitchen | ${branchInfo.name}`;
+  const description = `${branchInfo.name} is a home kitchen in ${branchInfo.city}. Every cake is made to order, with no preservatives and nothing pre-made.`;
+
   return {
-    title: `About Our Home Kitchen | ${branchInfo.name}`,
-    description: `${branchInfo.name} is a home kitchen in ${branchInfo.city}. Every cake is made to order, with no preservatives and nothing pre-made.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/about` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/about`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -37,7 +54,7 @@ export default async function AboutPage({ params }: { params: Promise<Params> })
 
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="flex flex-col gap-6">
-            <SectionHeader eyebrow="Our story" title={`A home kitchen in ${branchInfo.city}`} />
+            <SectionHeader as="h1" eyebrow="Our story" title={`A home kitchen in ${branchInfo.city}`} />
 
             <div className="flex flex-col gap-4 text-base leading-relaxed text-ink/75">
               <p>
@@ -63,6 +80,13 @@ export default async function AboutPage({ params }: { params: Promise<Params> })
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "about",
+                },
+              }}
             >
               <WhatsAppIcon />
               Talk to us on WhatsApp

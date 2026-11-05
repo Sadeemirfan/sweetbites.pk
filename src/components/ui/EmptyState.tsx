@@ -29,6 +29,13 @@ export function EmptyState({
           variant="whatsapp"
           href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
           external
+          trackEvent={{
+            name: "whatsapp_click",
+            params: {
+              branch: branchInfo.slug,
+              location: "empty_state",
+            },
+          }}
           className="mt-2"
         >
           <WhatsAppIcon />

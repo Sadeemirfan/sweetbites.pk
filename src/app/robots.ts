@@ -6,10 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // §15 - the dashboard must never be indexed. The admin pages also
-      // carry robots: noindex in their own metadata, so this holds even
-      // if a URL is linked from somewhere else.
-      disallow: ["/admin", "/admin/"],
+      // §15 - the dashboard and private backend APIs must never be indexed.
+      disallow: ["/admin", "/admin/", "/api", "/api/"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

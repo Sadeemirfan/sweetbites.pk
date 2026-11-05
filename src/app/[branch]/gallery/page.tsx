@@ -11,6 +11,8 @@ import { getAllProducts } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 
+export const dynamic = "force-dynamic";
+
 type Params = { branch: string };
 
 export async function generateMetadata({
@@ -21,11 +23,27 @@ export async function generateMetadata({
   const { branch } = await params;
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
+  const products = await getAllProducts(branch);
+  const hasProducts = products.length > 0;
+
+  const title = `Homemade Cakes in ${branchInfo.city} - Custom & Birthday Cake Gallery | ${branchInfo.shortName}`;
+  const description = `Browse every homemade cake ${branchInfo.name} makes - birthday, wedding, and custom theme cakes. Message us on WhatsApp for current prices.`;
 
   return {
-    title: `Homemade Cakes in ${branchInfo.city} - Custom & Birthday Cake Gallery | ${branchInfo.shortName}`,
-    description: `Browse every homemade cake ${branchInfo.name} makes - birthday, wedding, and custom theme cakes. Message us on WhatsApp for current prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery` },
+    ...(!hasProducts ? { robots: { index: false, follow: true } } : {}),
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/gallery`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -49,6 +67,7 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
         <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Gallery" }]} />
 
         <SectionHeader
+          as="h1"
           eyebrow="The catalogue"
           title="Every cake we make"
           lead="Tap any cake for sizes and flavours - message us on WhatsApp for the price."
@@ -81,6 +100,13 @@ export default async function GalleryPage({ params }: { params: Promise<Params> 
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "gallery",
+                },
+              }}
             >
               <WhatsAppIcon />
               Order on WhatsApp

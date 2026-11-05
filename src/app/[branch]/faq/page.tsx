@@ -6,8 +6,12 @@ import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Faq } from "@/components/ui/Faq";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -152,10 +156,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Cake Ordering FAQ | ${branchInfo.name}`;
+  const description = `Lead time, delivery charges, payment methods, and how to store your cake - the questions we're asked most at ${branchInfo.name}.`;
+
   return {
-    title: `Cake Ordering FAQ | ${branchInfo.name}`,
-    description: `Lead time, delivery charges, payment methods, and how to store your cake - the questions we're asked most at ${branchInfo.name}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/faq` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/faq`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -184,6 +201,7 @@ export default async function FaqPage({ params }: { params: Promise<Params> }) {
 
         <div className="max-w-3xl">
           <SectionHeader
+            as="h1"
             eyebrow="Questions"
             title="Things people ask before ordering"
             lead="If your question isn't here, message us - we answer during shop hours."
@@ -199,6 +217,13 @@ export default async function FaqPage({ params }: { params: Promise<Params> }) {
               variant="whatsapp"
               href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
               external
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "faq",
+                },
+              }}
             >
               <WhatsAppIcon />
               Ask on WhatsApp

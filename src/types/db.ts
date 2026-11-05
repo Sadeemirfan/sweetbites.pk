@@ -61,6 +61,7 @@ export interface Database {
           sort_order: number;
           is_active: boolean;
           created_at: string;
+          updated_at?: string;
           branch: BranchEnum;
         };
         Insert: {
@@ -72,6 +73,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
           branch?: BranchEnum;
         };
         Update: {
@@ -83,6 +85,7 @@ export interface Database {
           sort_order?: number;
           is_active?: boolean;
           created_at?: string;
+          updated_at?: string;
           branch?: BranchEnum;
         };
         Relationships: [];
@@ -105,6 +108,7 @@ export interface Database {
           is_active: boolean;
           sort_order: number;
           created_at: string;
+          updated_at?: string;
           branch: BranchEnum;
         };
         Insert: {
@@ -124,6 +128,7 @@ export interface Database {
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
+          updated_at?: string;
           branch?: BranchEnum;
         };
         Update: {
@@ -143,6 +148,7 @@ export interface Database {
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
+          updated_at?: string;
           branch?: BranchEnum;
         };
         Relationships: [

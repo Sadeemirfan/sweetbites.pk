@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { SocialLinks } from "@/components/layout/SocialLinks";
 import { navLinks } from "@/components/layout/nav-links";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { BRANCHES, BRANCH_INFO, type BranchInfo } from "@/lib/branches";
 
 export function Footer({ branchInfo }: { branchInfo: BranchInfo }) {
@@ -50,12 +51,21 @@ export function Footer({ branchInfo }: { branchInfo: BranchInfo }) {
 
           <div className="flex flex-col gap-3 text-sm text-cream-100">
             <span className="eyebrow text-cream-200">Visit &amp; order</span>
-            <a
+            <TrackedLink
               href={`https://wa.me/${branchInfo.whatsappNumber}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              trackEvent={{
+                name: "whatsapp_click",
+                params: {
+                  branch: branchInfo.slug,
+                  location: "footer",
+                },
+              }}
               className="inline-flex min-h-11 items-center hover:text-ghee"
             >
               WhatsApp: {branchInfo.phoneDisplay}
-            </a>
+            </TrackedLink>
             <p className="max-w-xs">
               {branchInfo.street}, {branchInfo.city}, {branchInfo.region}
             </p>

@@ -10,6 +10,8 @@ export function MobileBottomBar({ branchInfo }: { branchInfo: BranchInfo }) {
       <WhatsAppCta
         whatsappNumber={branchInfo.whatsappNumber}
         message={defaultWhatsappMessage(branchInfo.name)}
+        branch={branchInfo.slug}
+        location="mobile_bottom_bar"
         tone="whatsapp"
         className="flex w-full"
       />

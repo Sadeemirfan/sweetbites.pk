@@ -1,4 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
+import type { Branch } from "@/lib/branches";
+import { getBranchInfo } from "@/lib/branches";
 
 export type PaymentAccount = { number?: string; name?: string };
 export type BankAccount = {
@@ -21,10 +23,20 @@ export type PaymentDetails = {
  * so nothing here is hardcoded.
  */
 export async function getSettings(): Promise<Record<string, unknown>> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase.from("site_settings").select("key, value");
 
   return Object.fromEntries((data ?? []).map((row) => [row.key, row.value]));
+}
+
+/** Resolves menu image url for a branch: Arifwala checks site_settings, others check branch config. */
+export async function getBranchMenuImageUrl(branch: Branch): Promise<string | null> {
+  const branchInfo = getBranchInfo(branch);
+  if (branch === "arifwala") {
+    const settings = await getSettings();
+    return typeof settings.menu_image_url === "string" ? settings.menu_image_url : null;
+  }
+  return branchInfo.menuImageUrl;
 }
 
 /** Applied to the "After 10 PM" slot, on top of any area fee (§7 step 3). */

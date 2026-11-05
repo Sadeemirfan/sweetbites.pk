@@ -6,12 +6,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Run on every route except static assets, so the session cookie
-     * stays fresh site-wide - /admin/* enforcement happens inside
-     * updateSession itself.
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/admin/:path*", "/api/:path*"],
 };

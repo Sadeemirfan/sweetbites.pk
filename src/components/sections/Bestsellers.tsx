@@ -25,12 +25,13 @@ export async function Bestsellers({ branchInfo }: { branchInfo: BranchInfo }) {
         <div className="mt-10">
           {products.length ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
+              {products.map((product, index) => (
                 <ProductCard
                   key={product.id}
                   product={product}
                   branchInfo={branchInfo}
                   categorySlug={product.category?.slug ?? ""}
+                  priority={index === 0}
                 />
               ))}
             </div>

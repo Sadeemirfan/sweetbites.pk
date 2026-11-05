@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { SITE_URL } from "@/lib/constants";
@@ -20,6 +20,12 @@ const instrumentSans = Instrument_Sans({
   variable: "--font-instrument-sans",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#9A7170",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -33,6 +39,18 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Sweet Bites",
     locale: "en_PK",
+    images: [
+      {
+        url: "/logo-transparent.png",
+        width: 1167,
+        height: 654,
+        alt: "Sweet Bites",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/logo-transparent.png"],
   },
 };
 

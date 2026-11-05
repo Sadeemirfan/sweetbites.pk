@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { WhatsAppIcon } from "@/components/ui/Button";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { cn } from "@/lib/utils/cn";
 import { productWhatsappLink } from "@/lib/utils/whatsapp";
 import type { BranchInfo } from "@/lib/branches";
@@ -163,15 +164,23 @@ export function ProductOrderPanel({
         </span>
       </div>
 
-      <a
+      <TrackedLink
         href={waHref}
         target="_blank"
         rel="noopener noreferrer"
+        trackEvent={{
+          name: "whatsapp_click",
+          params: {
+            branch: branchInfo.slug,
+            location: "product_order_panel",
+            product: product.name,
+          },
+        }}
         className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-whatsapp px-5 text-base font-medium text-[#04301A] transition-colors hover:bg-whatsapp/90"
       >
         <WhatsAppIcon />
         Check price on WhatsApp
-      </a>
+      </TrackedLink>
 
       <p className="text-sm text-ink/60">
         Your size, flavour, and message are filled in for you - just press send. We reply during

@@ -5,9 +5,14 @@ import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { MapEmbed } from "@/components/sections/LocationHours";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 import { bakerySchema } from "@/lib/seo/jsonld";
-import { getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch, type BranchInfo } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -27,10 +32,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Contact & Location | ${branchInfo.name}`;
+  const description = `${branchInfo.name} - ${branchInfo.street}. ${branchInfo.hoursDisplay}. Order on WhatsApp: ${branchInfo.phoneDisplay}.`;
+
   return {
-    title: `Contact & Location | ${branchInfo.name}`,
-    description: `${branchInfo.name} - ${branchInfo.street}. ${branchInfo.hoursDisplay}. Order on WhatsApp: ${branchInfo.phoneDisplay}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/contact` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/contact`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -51,26 +69,34 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
       <Section tone="cream">
         <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Contact" }]} />
 
-        <SectionHeader eyebrow="Contact" title="Get in touch" />
+        <SectionHeader as="h1" eyebrow="Contact" title="Get in touch" />
 
         <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="flex flex-col gap-8">
             <dl className="flex flex-col gap-6">
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-rosewood">WhatsApp &amp; calls</dt>
-                <dd className="text-lg text-ink">
-                  <a
+                <dd>
+                  <TrackedLink
                     href={`tel:${branchInfo.phoneE164}`}
-                    className="underline-offset-4 hover:text-rosewood hover:underline"
+                    trackEvent={{
+                      name: "phone_click",
+                      params: {
+                        branch: branchInfo.slug,
+                        phone_number: branchInfo.phoneE164,
+                        location: "contact",
+                      },
+                    }}
+                    className="text-lg text-ink underline-offset-4 hover:text-rosewood hover:underline"
                   >
                     {branchInfo.phoneDisplay}
-                  </a>
+                  </TrackedLink>
                 </dd>
               </div>
 
               <div className="flex flex-col gap-1">
                 <dt className="eyebrow text-rosewood">Address</dt>
-                <dd className="max-w-sm text-base text-ink/80">
+                <dd className="text-base text-ink/80">
                   {branchInfo.street}, {branchInfo.city}, {branchInfo.region}
                 </dd>
               </div>
@@ -82,15 +108,15 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
 
               {socials.length ? (
                 <div className="flex flex-col gap-2">
-                  <dt className="eyebrow text-rosewood">Follow us</dt>
-                  <dd className="flex flex-wrap gap-2">
+                  <dt className="eyebrow text-rosewood">Social profiles</dt>
+                  <dd className="flex flex-wrap gap-x-4 gap-y-2">
                     {socials.map((social) => (
                       <a
                         key={social.key}
                         href={branchInfo.socials[social.key]}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-11 items-center rounded-md border border-cream-200 px-4 text-sm text-ink transition-colors hover:border-rosewood hover:text-rosewood"
+                        className="text-sm text-ink/75 underline-offset-4 hover:text-rosewood hover:underline"
                       >
                         {social.label}
                       </a>
@@ -105,28 +131,48 @@ export default async function ContactPage({ params }: { params: Promise<Params> 
                 variant="whatsapp"
                 href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
                 external
+                trackEvent={{
+                  name: "whatsapp_click",
+                  params: {
+                    branch: branchInfo.slug,
+                    location: "contact",
+                  },
+                }}
               >
                 <WhatsAppIcon />
                 Order on WhatsApp
               </ButtonLink>
               {mapsLink ? (
-                <ButtonLink variant="outline" href={mapsLink} external>
+                <ButtonLink
+                  variant="outline"
+                  href={mapsLink}
+                  external
+                  trackEvent={{
+                    name: "directions_click",
+                    params: {
+                      branch: branchInfo.slug,
+                      location: "contact",
+                    },
+                  }}
+                >
                   Get directions
                 </ButtonLink>
               ) : null}
             </div>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="overflow-hidden rounded-lg border border-cream-200">
             {branchInfo.mapEmbedSrc ? (
-              <div className="overflow-hidden rounded-lg border border-cream-200">
-                <MapEmbed
-                  src={branchInfo.mapEmbedSrc}
-                  title={`Map showing ${branchInfo.name}`}
-                  className="h-72 w-full border-0"
-                />
+              <MapEmbed
+                src={branchInfo.mapEmbedSrc}
+                title={`Map showing ${branchInfo.name}`}
+                className="h-72 w-full border-0 lg:h-full lg:min-h-[22rem]"
+              />
+            ) : (
+              <div className="flex h-72 w-full items-center justify-center bg-cream-100 text-sm text-ink/60 lg:h-full lg:min-h-[22rem]">
+                Map coming soon
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </Section>

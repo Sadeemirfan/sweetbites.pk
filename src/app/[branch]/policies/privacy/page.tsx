@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Prose } from "@/components/ui/Prose";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -18,7 +22,7 @@ export async function generateMetadata({
 
   return {
     title: `Privacy Policy | ${branchInfo.name}`,
-    description: `What information ${branchInfo.name} collects when you order, and how it's used.`,
+    description: `How ${branchInfo.name} collects, uses, and protects your information.`,
     alternates: { canonical: `/${branch}/policies/privacy` },
   };
 }
@@ -27,64 +31,65 @@ export default async function PrivacyPolicyPage({ params }: { params: Promise<Pa
   const { branch } = await params;
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
-  const hasOrderRecords = branch === "arifwala";
 
   return (
     <Section tone="cream">
-      <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Privacy policy" }]} />
+      <Breadcrumbs
+        items={[
+          { name: "Home", href: `/${branch}` },
+          { name: "Policies", href: `/${branch}/policies/order` },
+          { name: "Privacy" },
+        ]}
+      />
 
-      <SectionHeader eyebrow="Policies" title="Privacy policy" />
+      <div className="max-w-3xl">
+        <SectionHeader as="h1" eyebrow="Policy" title="Privacy Policy" />
 
-      <div className="mt-8">
-        <Prose>
-          <h2>What we collect</h2>
+        <Prose className="mt-8">
           <p>
-            This website itself doesn&apos;t have an account system or a checkout form - there is
-            nothing to sign up for. Every order goes through WhatsApp, so what we know about you
-            is whatever you tell us there: your name, phone number, delivery address, and the
-            details of what you&apos;re ordering.
+            At Sweet Bites ({branchInfo.name}), we value your privacy. We collect only the
+            information strictly needed to bake and deliver your orders.
           </p>
 
-          {hasOrderRecords ? (
-            <p>
-              Because {branchInfo.name} takes orders in person and by phone as well as WhatsApp,
-              we keep a simple record of past orders - name, phone number, delivery address, and
-              order history - so that if you order again, we don&apos;t have to ask you to repeat
-              everything. This record is only used by our own kitchen staff to prepare and deliver
-              orders.
-            </p>
-          ) : (
-            <p>
-              {branchInfo.name} doesn&apos;t keep a separate customer database - your order
-              details live in the WhatsApp conversation between you and our business number, the
-              same as messaging any other business on WhatsApp.
-            </p>
-          )}
-
-          <h2>How we use it</h2>
+          <h2>Information We Collect</h2>
           <p>
-            Only to take, confirm, prepare, and deliver your order, and to reach you if there is a
-            question about it. We don&apos;t use it for marketing you haven&apos;t asked for.
+            When you place an order, request a custom quote, or contact us, we collect:
+          </p>
+          <ul>
+            <li>Your name and contact phone number / WhatsApp number.</li>
+            <li>Delivery address (if opting for home delivery).</li>
+            <li>Cake customization details (names, messages, occasion dates).</li>
+            <li>Payment transaction references or receipts for bank/wallet payments.</li>
+          </ul>
+
+          <h2>No Customer Accounts</h2>
+          <p>
+            We do not maintain public customer accounts, passwords, or stored credit card numbers.
+            All checkout and communication proceed directly via WhatsApp or phone.
           </p>
 
-          <h2>What we don&apos;t do</h2>
+          <h2>How We Use Your Information</h2>
+          <p>We use your information solely to:</p>
+          <ul>
+            <li>Fulfill, bake, and deliver your orders.</li>
+            <li>Communicate with you regarding your cake details or delivery timing.</li>
+            <li>
+              Remember your recurring special occasions (such as yearly birthdays or
+              anniversaries) so we can send you a reminder in advance.
+            </li>
+          </ul>
+
+          <h2>Third-Party Sharing</h2>
           <p>
-            We don&apos;t sell, rent, or share your information with third parties. WhatsApp
-            itself is operated by Meta, and any message you send us is subject to WhatsApp&apos;s
-            own privacy terms as well as ours.
+            We do not sell, rent, or trade your personal information to third parties. We share
+            address and contact numbers only with our local delivery riders to bring your cake to
+            your doorstep.
           </p>
 
-          <h2>Reviews</h2>
+          <h2>Contact Us</h2>
           <p>
-            If you leave a review on this site, the name and text you submit are shown publicly
-            once approved. Your phone number is never published.
-          </p>
-
-          <h2>Questions</h2>
-          <p>
-            If you have a question about your information or want something about a past order
-            removed, message us on WhatsApp at {branchInfo.phoneDisplay} and we&apos;ll sort it
-            out directly.
+            If you have questions about our privacy practices, please contact us directly on
+            WhatsApp at {branchInfo.phoneDisplay}.
           </p>
         </Prose>
       </div>

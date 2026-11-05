@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { ProductOrderPanel } from "@/components/ui/ProductOrderPanel";
+import { ReadyDate } from "@/components/ui/ReadyDate";
 import { Section } from "@/components/ui/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbSchema, productSchema } from "@/lib/seo/jsonld";
 import { getCategoryBySlug, getProductBySlug } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
-import { earliestDate } from "@/lib/availability";
-import { formatLongDate } from "@/lib/utils/format";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ branch: string; category: string; product: string }> };
 
@@ -22,15 +23,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!product) return { title: `Cake not found | ${branchInfo.shortName}` };
 
+  const title = `${product.name} in ${branchInfo.city} | ${branchInfo.shortName}`;
+  const description =
+    product.description ??
+    `${product.name}, made to order in ${branchInfo.city}. See sizes, flavours and prices.`;
+
   return {
-    title: `${product.name} in ${branchInfo.city} | ${branchInfo.shortName}`,
-    description:
-      product.description ??
-      `${product.name}, made to order in ${branchInfo.city}. See sizes, flavours and prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery/${categorySlug}/${product.slug}` },
     openGraph: {
       title: `${product.name} | ${branchInfo.name}`,
-      description: product.description ?? undefined,
+      description,
+      url: `/${branch}/gallery/${categorySlug}/${product.slug}`,
+      images: product.image_url ? [product.image_url] : undefined,
+    },
+    twitter: {
+      card: product.image_url ? "summary_large_image" : "summary",
+      title: `${product.name} | ${branchInfo.name}`,
+      description,
       images: product.image_url ? [product.image_url] : undefined,
     },
   };
@@ -48,7 +59,6 @@ export default async function ProductPage({ params }: PageProps) {
 
   if (!product || !category) notFound();
 
-  const readyDate = formatLongDate(earliestDate(product.lead_time_days));
   const gallery = product.images.length
     ? product.images
     : product.image_url
@@ -125,11 +135,17 @@ export default async function ProductPage({ params }: PageProps) {
               branchInfo={branchInfo}
             />
 
-            {/* §8: lead time framed as a promise, never a disclaimer. */}
+            {/* §8: lead time framed as a promise, never a disclaimer.
+                ReadyDate is a client component so the date is always
+                today's, never a build-time or edge-cache snapshot. */}
             <div className="rounded-lg border border-cream-200 bg-cream-100 p-4">
               <p className="text-base text-ink">
                 The earliest we can have this ready is{" "}
-                <span className="font-medium">{readyDate}</span>.
+                <ReadyDate
+                  leadTimeDays={product.lead_time_days ?? undefined}
+                  className="font-medium"
+                />
+                .
               </p>
               <p className="mt-1 text-sm text-ink/70">
                 Every cake is baked after you order it - we don&apos;t keep ready-made stock.

@@ -10,6 +10,8 @@ import { CountUp } from "@/components/motion/CountUp";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { getApprovedReviews, getReviewAggregate } from "@/lib/supabase/queries";
 
+export const dynamic = "force-dynamic";
+
 type Params = { branch: string };
 
 export async function generateMetadata({
@@ -21,10 +23,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Customer Reviews | ${branchInfo.name}`;
+  const description = `Real reviews from ${branchInfo.name} customers - birthday cakes, wedding cakes, and custom orders. Leave your own review.`;
+
   return {
-    title: `Customer Reviews | ${branchInfo.name}`,
-    description: `Real reviews from ${branchInfo.name} customers - birthday cakes, wedding cakes, and custom orders. Leave your own review.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/reviews` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/reviews`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -43,6 +58,7 @@ export default async function ReviewsPage({ params }: { params: Promise<Params> 
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Reviews" }]} />
 
       <SectionHeader
+        as="h1"
         eyebrow="Reviews"
         title={`What ${branchInfo.city} says`}
         lead="Every review below is from a real order. We publish the honest ones too."

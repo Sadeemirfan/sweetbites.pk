@@ -9,6 +9,8 @@ import { breadcrumbSchema } from "@/lib/seo/jsonld";
 import { getCategoryBySlug, getProductsByCategory } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = { params: Promise<{ branch: string; category: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -19,12 +21,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!category) return { title: `Category not found | ${branchInfo.shortName}` };
 
+  const products = await getProductsByCategory(category.id);
+  const hasProducts = products.length > 0;
+
+  const title = `${category.name} in ${branchInfo.city} | ${branchInfo.shortName}`;
+  const description =
+    category.description ??
+    `${category.name} made to order in ${branchInfo.city}, ${branchInfo.region}. Homemade, baked fresh after you order - message us on WhatsApp for prices.`;
+
   return {
-    title: `${category.name} in ${branchInfo.city} | ${branchInfo.shortName}`,
-    description:
-      category.description ??
-      `${category.name} made to order in ${branchInfo.city}, ${branchInfo.region}. Homemade, baked fresh after you order - message us on WhatsApp for prices.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/gallery/${category.slug}` },
+    ...(!hasProducts ? { robots: { index: false, follow: true } } : {}),
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/gallery/${category.slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -58,6 +77,7 @@ export default async function CategoryPage({ params }: PageProps) {
         />
 
         <SectionHeader
+          as="h1"
           eyebrow={`${products.length} ${products.length === 1 ? "cake" : "cakes"}`}
           title={category.name}
           lead={category.description ?? undefined}

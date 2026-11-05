@@ -4,7 +4,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { Prose } from "@/components/ui/Prose";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
 import { BLOG_POSTS, getBlogPost, renderBlogText } from "@/lib/blog";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
 import { formatLongDate } from "@/lib/utils/format";
@@ -22,10 +22,23 @@ export async function generateMetadata({
   const post = getBlogPost(slug);
   if (!post) return { title: `Blog | ${branchInfo.name}` };
 
+  const title = `${post.title} | ${branchInfo.name}`;
+  const description = renderBlogText(post.excerpt, branchInfo.city);
+
   return {
-    title: `${post.title} | ${branchInfo.name}`,
-    description: renderBlogText(post.excerpt, branchInfo.city),
+    title,
+    description,
     alternates: { canonical: `/${branch}/blog/${slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/blog/${slug}`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -47,7 +60,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
       />
 
       <div className="max-w-2xl">
-        <SectionHeader eyebrow={post.tag} title={post.title} />
+        <SectionHeader as="h1" eyebrow={post.tag} title={post.title} />
         <p className="mt-2 text-sm text-ink/50">
           {formatLongDate(new Date(post.publishedDate))} · {post.readTimeMinutes} min read
         </p>
@@ -77,6 +90,13 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
             variant="whatsapp"
             href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "blog_post",
+              },
+            }}
           >
             <WhatsAppIcon />
             Ask us on WhatsApp
@@ -88,5 +108,5 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 }
 
 export function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({ slug: post.slug }));
+  return BRANCHES.flatMap((branch) => BLOG_POSTS.map((post) => ({ branch, slug: post.slug })));
 }

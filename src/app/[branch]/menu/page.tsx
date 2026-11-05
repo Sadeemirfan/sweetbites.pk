@@ -4,9 +4,11 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ButtonLink, WhatsAppIcon } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getSettings } from "@/lib/settings";
+import { getBranchMenuImageUrl } from "@/lib/settings";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { defaultWhatsappMessage, whatsappLink } from "@/lib/utils/whatsapp";
+
+export const dynamic = "force-dynamic";
 
 type Params = { branch: string };
 
@@ -18,11 +20,27 @@ export async function generateMetadata({
   const { branch } = await params;
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
+  const menuImageUrl = await getBranchMenuImageUrl(branch);
+  const hasMenuImage = Boolean(menuImageUrl);
+
+  const title = `Menu & Prices | ${branchInfo.name}`;
+  const description = `The current ${branchInfo.name} price list - every cake, dessert, and price.`;
 
   return {
-    title: `Menu & Prices | ${branchInfo.name}`,
-    description: `The current ${branchInfo.name} price list - every cake, dessert, and price.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/menu` },
+    ...(!hasMenuImage ? { robots: { index: false, follow: true } } : {}),
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/menu`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -30,38 +48,28 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
   const { branch } = await params;
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
-
-  // Arifwala's admin can upload a new menu photo any time it changes
-  // (site_settings). Lahore and Pattoki have no admin dashboard, so
-  // theirs is plain config - see the note in branches.ts.
-  let menuImageUrl = branchInfo.menuImageUrl;
-  if (branch === "arifwala") {
-    const settings = await getSettings();
-    menuImageUrl = typeof settings.menu_image_url === "string" ? settings.menu_image_url : null;
-  }
+  const menuImageUrl = await getBranchMenuImageUrl(branch);
 
   return (
     <Section tone="cream">
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Menu" }]} />
 
-      <SectionHeader
-        eyebrow="Menu"
-        title="Prices"
-        lead="The gallery is for browsing what we make - this is where the actual, current prices live."
-      />
+      <div className="max-w-3xl">
+        <SectionHeader
+          as="h1"
+          eyebrow="Price list"
+          title={`The ${branchInfo.city} menu`}
+          lead="Every cake, dessert, and current price. We update this whenever recipes or prices change."
+        />
 
-      <div className="mt-8 max-w-2xl">
         {menuImageUrl ? (
-          <div className="overflow-hidden rounded-lg border border-cream-200 shadow-cream">
-            {/*
-              A plain <img>, not next/image - the owner re-uploads this
-              whenever prices change, so its real dimensions aren't known
-              ahead of time. next/image needs a fixed width/height to
-              reserve layout space, which would distort or crop a photo
-              whose actual aspect ratio doesn't match.
-            */}
+          <div className="mt-8 overflow-hidden rounded-lg border border-cream-200 bg-cream-100 shadow-cream">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={menuImageUrl} alt={`${branchInfo.name} price list`} className="h-auto w-full" />
+            <img
+              src={menuImageUrl}
+              alt={`${branchInfo.name} menu`}
+              className="w-full object-contain"
+            />
           </div>
         ) : (
           <EmptyState
@@ -76,6 +84,13 @@ export default async function MenuPage({ params }: { params: Promise<Params> }) 
             variant="whatsapp"
             href={whatsappLink(branchInfo.whatsappNumber, defaultWhatsappMessage(branchInfo.name))}
             external
+            trackEvent={{
+              name: "whatsapp_click",
+              params: {
+                branch: branchInfo.slug,
+                location: "menu",
+              },
+            }}
           >
             <WhatsAppIcon />
             Order on WhatsApp

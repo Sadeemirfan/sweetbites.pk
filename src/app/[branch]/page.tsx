@@ -7,9 +7,10 @@ import { ReviewsPreview } from "@/components/sections/ReviewsPreview";
 import { LocationHours } from "@/components/sections/LocationHours";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { bakerySchema } from "@/lib/seo/jsonld";
-import { getApprovedReviews, getReviewAggregate } from "@/lib/supabase/queries";
 import { getBranchInfo, isBranch } from "@/lib/branches";
 import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 type Params = { branch: string };
 
@@ -22,10 +23,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Homemade Cakes in ${branchInfo.city} - Custom Birthday & Wedding Cakes | ${branchInfo.shortName}`;
+  const description = `Custom, homemade cakes in ${branchInfo.city}, ${branchInfo.region} - birthday, wedding, and theme cakes, baked fresh after you order. Order on WhatsApp.`;
+
   return {
-    title: `Homemade Cakes in ${branchInfo.city} - Custom Birthday & Wedding Cakes | ${branchInfo.shortName}`,
-    description: `Custom, homemade cakes in ${branchInfo.city}, ${branchInfo.region} - birthday, wedding, and theme cakes, baked fresh after you order. Order on WhatsApp.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -43,14 +57,9 @@ export default async function BranchHomePage({ params }: { params: Promise<Param
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
 
-  const [aggregate, reviews] = await Promise.all([
-    getReviewAggregate(branch),
-    getApprovedReviews(branch, 5),
-  ]);
-
   return (
     <>
-      <JsonLd schema={bakerySchema(branchInfo, aggregate, reviews)} />
+      <JsonLd schema={bakerySchema(branchInfo)} />
       <Hero branchInfo={branchInfo} />
       <Bestsellers branchInfo={branchInfo} />
       <CustomCakesSection branchInfo={branchInfo} />

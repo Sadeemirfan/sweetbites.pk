@@ -1,5 +1,16 @@
 import Script from "next/script";
 
+export {
+  trackEvent,
+  trackWhatsAppClick,
+  trackPhoneClick,
+  trackDirectionsClick,
+  type WhatsAppClickParams,
+  type PhoneClickParams,
+  type DirectionsClickParams,
+  type TrackEventConfig,
+} from "@/lib/analytics";
+
 // The measurement ID is public - it ships in the page source either way,
 // so there is nothing to gain from routing it through an env var.
 const GA_MEASUREMENT_ID = "G-ZZB0GZKDTP";

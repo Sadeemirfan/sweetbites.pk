@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
+import { trackEvent, type TrackEventConfig } from "@/lib/analytics";
 
 /**
  * Colour discipline (§2.3):
@@ -33,6 +36,8 @@ export function ButtonLink({
   href,
   external,
   children,
+  trackEvent: eventConfig,
+  onClick,
   ...props
 }: {
   variant?: ButtonVariant;
@@ -40,19 +45,27 @@ export function ButtonLink({
   href: string;
   external?: boolean;
   children: React.ReactNode;
+  trackEvent?: TrackEventConfig;
 } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
   const classes = cn(BASE, VARIANTS[variant], className);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (eventConfig) {
+      trackEvent(eventConfig.name, eventConfig.params);
+    }
+    onClick?.(e);
+  };
+
   if (external) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={classes} {...props}>
+      <a href={href} target="_blank" rel="noopener noreferrer" className={classes} onClick={handleClick} {...props}>
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={classes} {...props}>
+    <Link href={href} className={classes} onClick={handleClick} {...props}>
       {children}
     </Link>
   );

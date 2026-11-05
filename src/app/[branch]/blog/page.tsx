@@ -3,9 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
 import { BLOG_POSTS, renderBlogText } from "@/lib/blog";
 import { formatLongDate } from "@/lib/utils/format";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -18,10 +22,23 @@ export async function generateMetadata({
   if (!isBranch(branch)) return {};
   const branchInfo = getBranchInfo(branch);
 
+  const title = `Cake Guides & Stories | ${branchInfo.name}`;
+  const description = `Guides on choosing birthday and wedding cakes in ${branchInfo.city}, flavours, and care tips from ${branchInfo.name}.`;
+
   return {
-    title: `Blog | ${branchInfo.name}`,
-    description: `Cake ideas, ordering guides, and tips from ${branchInfo.name}.`,
+    title,
+    description,
     alternates: { canonical: `/${branch}/blog` },
+    openGraph: {
+      title,
+      description,
+      url: `/${branch}/blog`,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
@@ -30,34 +47,43 @@ export default async function BlogIndexPage({ params }: { params: Promise<Params
   if (!isBranch(branch)) notFound();
   const branchInfo = getBranchInfo(branch);
 
-  const posts = [...BLOG_POSTS].sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1));
-
   return (
     <Section tone="cream">
       <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Blog" }]} />
 
       <SectionHeader
-        eyebrow="Blog"
-        title="Cake ideas & ordering guides"
-        lead={`A few notes from the ${branchInfo.city} kitchen - ideas, care tips, and how ordering actually works.`}
+        as="h1"
+        eyebrow="From the kitchen"
+        title="Guides &amp; cake stories"
+        lead="Honest advice on sizes, flavours, care tips, and choosing the right cake for your celebration."
       />
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <Link
+        {BLOG_POSTS.map((post) => (
+          <article
             key={post.slug}
-            href={`/${branch}/blog/${post.slug}`}
-            className="flex flex-col gap-3 rounded-lg border border-cream-200 bg-cream-50 p-5 transition-colors hover:border-rosewood/40"
+            className="flex flex-col justify-between rounded-lg border border-cream-200 bg-white/40 p-6 transition-colors hover:border-rosewood hover:bg-white/70"
           >
-            <span className="eyebrow text-rosewood">{post.tag}</span>
-            <h2 className="text-lg leading-snug text-ink">{post.title}</h2>
-            <p className="line-clamp-3 text-sm text-ink/70">
-              {renderBlogText(post.excerpt, branchInfo.city)}
-            </p>
-            <p className="mt-auto text-xs text-ink/50">
-              {formatLongDate(new Date(post.publishedDate))} · {post.readTimeMinutes} min read
-            </p>
-          </Link>
+            <div className="flex flex-col gap-3">
+              <span className="eyebrow text-rosewood">{post.tag}</span>
+              <h2 className="text-lg text-ink">
+                <Link
+                  href={`/${branch}/blog/${post.slug}`}
+                  className="underline-offset-4 hover:underline"
+                >
+                  {post.title}
+                </Link>
+              </h2>
+              <p className="text-sm leading-relaxed text-ink/70">
+                {renderBlogText(post.excerpt, branchInfo.city)}
+              </p>
+            </div>
+
+            <div className="mt-6 flex items-center justify-between border-t border-cream-200 pt-4 text-xs text-ink/50">
+              <time dateTime={post.publishedDate}>{formatLongDate(new Date(post.publishedDate))}</time>
+              <span>{post.readTimeMinutes} min read</span>
+            </div>
+          </article>
         ))}
       </div>
     </Section>

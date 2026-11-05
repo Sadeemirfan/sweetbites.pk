@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Prose } from "@/components/ui/Prose";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { getBranchInfo, isBranch } from "@/lib/branches";
+import { BRANCHES, getBranchInfo, isBranch } from "@/lib/branches";
+
+export function generateStaticParams() {
+  return BRANCHES.map((branch) => ({ branch }));
+}
 
 type Params = { branch: string };
 
@@ -19,10 +23,7 @@ export async function generateMetadata({
 
   return {
     title: `Delivery Policy | ${branchInfo.name}`,
-    description:
-      branchInfo.slug === "arifwala"
-        ? `Free cake delivery inside ${branchInfo.city} city up to 10:00 PM, charged delivery to nearby villages, time slots, and late-night fees.`
-        : `Cake delivery across ${branchInfo.city} - coverage and cost confirmed on WhatsApp before you order. Time slots and late-night fees explained.`,
+    description: `Delivery areas, fees, and pickup details for ${branchInfo.name}.`,
     alternates: { canonical: `/${branch}/policies/delivery` },
   };
 }
@@ -34,59 +35,64 @@ export default async function DeliveryPolicyPage({ params }: { params: Promise<P
 
   return (
     <Section tone="cream">
-      <Breadcrumbs items={[{ name: "Home", href: `/${branch}` }, { name: "Delivery policy" }]} />
+      <Breadcrumbs
+        items={[
+          { name: "Home", href: `/${branch}` },
+          { name: "Policies", href: `/${branch}/policies/order` },
+          { name: "Delivery" },
+        ]}
+      />
 
-      <SectionHeader eyebrow="Policies" title="Delivery policy" />
+      <div className="max-w-3xl">
+        <SectionHeader as="h1" eyebrow="Policy" title="Delivery &amp; Pickup" />
 
-      <div className="mt-8">
-        <Prose>
-          <h2>Where we deliver</h2>
+        <Prose className="mt-8">
+          <h2>{branchInfo.city} Delivery</h2>
+          {branchInfo.slug === "arifwala" ? (
+            <>
+              <p>
+                Delivery is completely free anywhere inside Arifwala city limits for orders delivered
+                between 8:00 AM and 10:00 PM.
+              </p>
+              <p>
+                Deliveries requested after 10:00 PM carry an additional late-night delivery charge
+                (including inside the city). This fee is set in the order summary before you confirm.
+              </p>
+            </>
+          ) : (
+            <p>
+              We deliver across {branchInfo.city}. Message us your delivery address on WhatsApp
+              and we will confirm coverage and any delivery charge before you place your order.
+            </p>
+          )}
+
+          <h2>Outlying Areas &amp; Nearby Villages</h2>
           <p>
-            We deliver inside {branchInfo.city} city and to nearby villages. We do not deliver to
-            other cities - a fresh cream cake does not survive a long journey, and we would rather
-            turn an order down than send one that arrives damaged.
+            We deliver to areas and villages surrounding {branchInfo.city}. Delivery charges vary by
+            distance. Check our{" "}
+            <Link href={`/${branch}/contact`}>contact page</Link> for area rates or confirm your
+            location with us on WhatsApp.
           </p>
 
+          <h2>Other Cities</h2>
           <p>
-            Message us your address on WhatsApp before you order and we&apos;ll confirm whether
-            we can reach you and what delivery costs.
+            We do not deliver cakes to other cities. Cakes are perishable, delicate items and do
+            not survive long-distance transit.
           </p>
 
-          <h2>Time slots</h2>
+          <h2>Free Pickup</h2>
           <p>
-            You pick a slot when you order: 10 AM–1 PM, 1–4 PM, 4–7 PM, or 7–10 PM. We aim to
-            arrive inside your slot and will message you when the cake leaves the kitchen.
+            You are always welcome to pick up your order directly from our kitchen at{" "}
+            {branchInfo.street}, {branchInfo.city}, during operating hours ({branchInfo.hoursDisplay}).
+            Pickup is always free of charge.
           </p>
 
-          <h2>Deliveries after 10:00 PM</h2>
+          <h2>Delivery Windows</h2>
           <p>
-            We can deliver after 10:00 PM, but it carries an extra late-night charge, on top of
-            whatever the delivery normally costs. That charge is shown to you before you choose
-            the slot, never added quietly at the end.
-          </p>
-
-          <h2>Pickup</h2>
-          <p>
-            Pickup from the kitchen is always free. We are at {branchInfo.street}, open{" "}
-            {branchInfo.hoursDisplay}.
-          </p>
-
-          <h2>When nobody is home</h2>
-          <p>
-            Please make sure someone can receive the cake in your slot. We will call before we
-            arrive. If we cannot hand it over, we will wait as long as we reasonably can, but a
-            second delivery attempt to the same address is charged again.
-          </p>
-
-          <p>
-            Payment terms and cancellations are covered in the{" "}
-            <Link
-              href={`/${branch}/policies/order`}
-              className="text-rosewood underline underline-offset-4"
-            >
-              order policy
-            </Link>
-            .
+            We deliver in scheduled time slots (10:00 AM to 1:00 PM, 1:00 PM to 4:00 PM, 4:00 PM to
+            7:00 PM, 7:00 PM to 10:00 PM, and after 10:00 PM). While we aim to deliver promptly
+            within your chosen slot, delivery times may vary slightly depending on weather and road
+            conditions.
           </p>
         </Prose>
       </div>
